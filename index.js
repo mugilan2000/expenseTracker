@@ -196,3 +196,16 @@ document.getElementById('inp-date').value=new Date().toISOString().split('T')[0]
 document.getElementById('month-label').textContent=new Date().toLocaleString('en-IN',{month:'long',year:'numeric'});
 buildCatChips();
 render();renderStats();renderCatChart();renderBudget();
+
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open('app-cache').then(cache => {
+      return cache.addAll([
+        '/',
+        '/index.html',
+        '/index.css',
+        '/index.js'
+      ]);
+    })
+  );
+});
