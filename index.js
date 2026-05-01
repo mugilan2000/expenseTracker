@@ -162,10 +162,13 @@ function renderCatChart(){
 
 function renderBudget(){
   const spent=transactions.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
-  document.getElementById('budget-spent').textContent=fmt(spent);
+  const currentMonthExpenses = transactions.filter(t=>new Date(t.date).toLocaleString('en-IN',{month:'long',year:'numeric'})===new Date().toLocaleString('en-IN',{month:'long',year:'numeric'}))
+                                .filter(t=>t.type==='expense')
+                                .reduce((s,t)=>s+t.amount,0);
+  document.getElementById('budget-spent').textContent=fmt(currentMonthExpenses);
   document.getElementById('budget-set').textContent=budget?fmt(budget):'Not set';
   if(budget){
-    const pct=Math.min(100,Math.round(spent/budget*100));
+    const pct=Math.min(100,Math.round(currentMonthExpenses/budget*100));
     const bar=document.getElementById('budget-bar');
     bar.style.width=pct+'%';
     bar.className='big-bar-fill'+(pct>=100?' danger':pct>=75?' warn':'');
