@@ -190,7 +190,7 @@ function exportCSV(){
   const rows=transactions.map(t=>`${t.date},"${t.name}",${t.category},${t.type},${t.amount},${t.payment}`).join('\n');
   const blob=new Blob([header+rows],{type:'text/csv'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download='spendwise-export.csv';a.click();
+  a.download=new Date().toLocaleString('en-IN',{month:'long',year:'numeric'}) + ' Report.csv';a.click();
   toast('CSV exported!');
 }
 
