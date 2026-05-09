@@ -189,7 +189,7 @@ function renderStreak(){
 function exportCSV(){
   if(!transactions.length){toast('No transactions to export');return}
   const header='Date,Description,Category,Type,Amount,Payment\n';
-  const rows=transactions.map(t=>`${t.date},"${t.name}",${t.category},${t.type},${t.amount},${t.payment}`).join('\n');
+  const rows=transactions.filter(t=>new Date(t.date).toLocaleString('en-IN',{month:'long',year:'numeric'})===new Date().toLocaleString('en-IN',{month:'long',year:'numeric'})).map(t=>`${t.date},"${t.name}",${t.category},${t.type},${t.amount},${t.payment}`).join('\n');
   const blob=new Blob([header+rows],{type:'text/csv'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
   a.download=new Date().toLocaleString('en-IN',{month:'long',year:'numeric'}) + ' Report.csv';a.click();
