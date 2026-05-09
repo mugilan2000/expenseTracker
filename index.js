@@ -131,13 +131,15 @@ function renderStats(){
   nb.style.color=net>=0?'var(--green)':'var(--red)';
   const exp=transactions.filter(t=>t.type==='expense');
   if(exp.length){
-    const biggest=exp.reduce((a,b)=>b.amount>a.amount?b:a);
-    document.getElementById('biggest-expense').textContent=fmt(biggest.amount);
-    document.getElementById('biggest-cat').textContent=biggest.category;
+    //const biggest=exp.reduce((a,b)=>b.amount>a.amount?b:a);
+    const biggest = exp.filter(t=>new Date(t.date).toLocaleString('en-IN',{day:'numeric', month:'long',year:'numeric'})===new Date().toLocaleString('en-IN',{day:'numeric',month:'long',year:'numeric'}))
+                        .reduce((a,b)=>a+b.amount, 0);
+    document.getElementById('biggest-expense').textContent=fmt(biggest);
+    document.getElementById('biggest-cat').textContent='All categories';
   }
   else{
     document.getElementById('biggest-expense').textContent=fmt(0);
-    document.getElementById('biggest-cat').textContent='NA';
+    document.getElementById('biggest-cat').textContent='All categories';
   }
   renderStreak();
 }
