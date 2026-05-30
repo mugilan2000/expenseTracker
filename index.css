@@ -99,3 +99,18 @@
   #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   @media(max-width:900px){.content-grid{grid-template-columns:1fr}.stats-grid{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:560px){main{padding:16px}header{padding:0 16px}.stats-grid{grid-template-columns:1fr 1fr}.form-row{grid-template-columns:1fr}}
+  .loader {
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid var(--accent);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
