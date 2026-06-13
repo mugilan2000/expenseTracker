@@ -26,7 +26,7 @@
   main{padding:24px 28px;max-width:1100px;margin:0 auto;width:100%}
   .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
   .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;position:relative;overflow:hidden}
-  .stat-card::after{content:'';position:absolute;inset:0;opacity:0.04;border-radius:var(--r)}
+  .stat-card::after{content:'';position:absolute;inset:0;opacity:0.04;border-radius:var(--r);pointer-events:none}
   .stat-card.green::after{background:var(--green)}
   .stat-card.red::after{background:var(--red)}
   .stat-card.amber::after{background:var(--amber)}
@@ -113,4 +113,43 @@
   100% {
     transform: rotate(360deg);
   }
+}
+
+.masked {
+  display: none;
+  height: 1.3em;
+  background: linear-gradient(90deg, var(--text3) 25%, var(--text3) 50%, var(--text3) 75%, var(--text3));
+  background-size: 8px 100%;
+  background-position: 0 0;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 0 0; }
+  100% { background-position: 8px 0; }
+}
+
+.eye-icon {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  user-select: none;
+}
+
+.eye-icon:hover {
+  transform: scale(1.1);
+}
+
+.stat-value {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+  transition: opacity 0.2s ease;
+  pointer-events: auto;
+}
+
+.stat-value:hover {
+  opacity: 0.8;
 }

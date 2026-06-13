@@ -18,6 +18,8 @@ let budget = parseFloat(localStorage.getItem("sw_budget") || "0");
 let activeType = "expense";
 let activeCat = "Food";
 let filter = "all";
+let incomeVisible = localStorage.getItem("sw_income_visible") !== "false";
+let netVisible = localStorage.getItem("sw_net_visible") !== "false";
 
 async function fetchData() {
 
@@ -267,19 +269,41 @@ async function renderStats() {
     .filter((t) => t.type === "expense")
     .reduce((s, t) => s + t.amount, 0);
   const net = income - expenses;
-  document.getElementById("total-income").textContent = fmt(income);
+  
+  // Render income value
+  const incomeEl = document.getElementById("total-income");
+  const valIncomeEl = document.getElementById("val-income");
+  const eyeIncomeEl = document.getElementById("eyeico-income");
+  if (incomeVisible) {
+    valIncomeEl.innerHTML = fmt(income);
+    eyeIncomeEl.textContent = "👁️";
+  } else {
+    valIncomeEl.innerHTML = '<span class="masked" style="width:90px"></span>';
+    eyeIncomeEl.textContent = "🔒";
+  }
+  
+  // Render net balance value
+  const netEl = document.getElementById("net-balance");
+  const valNetEl = document.getElementById("val-net");
+  const eyeNetEl = document.getElementById("eyeico-net");
+  if (netVisible) {
+    valNetEl.innerHTML = fmt(net);
+    eyeNetEl.textContent = "👁️";
+  } else {
+    valNetEl.innerHTML = '<span class="masked" style="width:90px"></span>';
+    eyeNetEl.textContent = "🔒";
+  }
+  netEl.style.color = net >= 0 ? "var(--green)" : "var(--red)";
+  
   document.getElementById("total-expenses").textContent = fmt(expenses);
   document.getElementById("income-count").textContent =
     transactions.filter((t) => t.type === "income").length + " transactions";
   document.getElementById("expense-count").textContent =
     transactions.filter((t) => t.type === "expense").length + " transactions";
-  const nb = document.getElementById("net-balance");
-  nb.textContent = fmt(net);
-  nb.style.color = net >= 0 ? "var(--green)" : "var(--red)";
   const exp = transactions.filter((t) => t.type === "expense");
   if (exp.length) {
     //const biggest = exp.reduce((a, b) => (b.amount > a.amount ? b : a));
-    const biggest = exp.filter(t=>new Date(t.date).toLocaleString('en-IN',{day:'numeric', month:'long',year:'numeric'})===new Date().toLocaleString('en-IN',{day:'numeric',month:'long',year:'numeric'}))
+    const biggest = exp.filter(t=>new Date(t.date).toLocaleString('en-IN',{month:'long',year:'numeric'})===new Date().toLocaleString('en-IN',{month:'long',year:'numeric'}))
                         .reduce((a,b)=>a+b.amount, 0);
     document.getElementById("biggest-expense").textContent = fmt(
       biggest,
@@ -358,6 +382,17 @@ async function renderBudget() {
   }
 }
 
+function toggleVis(type) {
+  if (type === "income") {
+    incomeVisible = !incomeVisible;
+    localStorage.setItem("sw_income_visible", incomeVisible);
+  } else if (type === "net") {
+    netVisible = !netVisible;
+    localStorage.setItem("sw_net_visible", netVisible);
+  }
+  renderStats();
+}
+
 async function renderStreak() {
   let transactions = await fetchData();
   const days = new Set(transactions.map((t) => t.date));
@@ -406,6 +441,11 @@ document.getElementById("month-label").textContent = new Date().toLocaleString(
   "en-IN",
   { month: "long", year: "numeric" },
 );
+
+// Add event listeners for visibility toggles
+document.getElementById("total-income").addEventListener("click", () => toggleVis("income"));
+document.getElementById("net-balance").addEventListener("click", () => toggleVis("net"));
+
 buildCatChips();
 render();
 renderStats();
