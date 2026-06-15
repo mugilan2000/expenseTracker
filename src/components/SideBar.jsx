@@ -28,7 +28,6 @@ const SideBar = ({ allTransactions }) => {
    function renderBudget() {
 
     let transactions = allTransactions;
-    console.log("All transactions:", transactions);
     const currentMonthExpenses = transactions
       .filter(
         (t) =>
@@ -43,7 +42,6 @@ const SideBar = ({ allTransactions }) => {
       )
       .filter((t) => t.type === "expense")
       .reduce((s, t) => s + t.amount, 0);
-    console.log("Current month expenses:", currentMonthExpenses);
 
     setSpent(fmt(currentMonthExpenses));
     if (budget) {
