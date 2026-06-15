@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Changa+One:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root {
+  --bg: #0e0f11;
+  --surface: #16181c;
+  --surface2: #1e2126;
+  --surface3: #252930;
+  --border: #2e3340;
+  --border2: #3a4050;
+  --text: #f0f2f7;
+  --text2: #9ba3b4;
+  --text3: #5a6278;
+  --accent: #7c6af4;
+  --accent2: #a394ff;
+  --green: #3ecf8e;
+  --red: #f46a6a;
+  --amber: #f9b44a;
+  --blue: #5aabff;
+  --teal: #36c6c6;
+  --font-display: "DM Serif Display", serif;
+  --font: "DM Sans", sans-serif;
+  --r: 12px;
+  --r2: 8px;
+}
