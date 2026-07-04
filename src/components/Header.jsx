@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const Header = ({ allTransactions }) => {
+const Header = ({ allTransactions, accessToken }) => {
   function exportCSV() {
     let transactions = allTransactions;
     if (!transactions.length) {
@@ -35,20 +35,29 @@ const Header = ({ allTransactions }) => {
   }
   return (
     <>
-      <header>
-        <div class="logo">
-          Expense<span>Tracker</span>
-        </div>
-        <div class="header-actions">
-          <span
-            id="month-label"
-            style={{ fontSize: "13px", color: "var(--text3)" }}
-          ></span>
-          <button class="btn btn-ghost" onClick={exportCSV}>
-            Export CSV
-          </button>
-        </div>
-      </header>
+      {accessToken ? (
+        <header>
+          <div class="logo">
+            Expense<span>Tracker</span>
+          </div>
+
+          <div class="header-actions">
+            <span
+              id="month-label"
+              style={{ fontSize: "13px", color: "var(--text3)" }}
+            ></span>
+            <button class="btn btn-ghost" onClick={exportCSV}>
+              Export CSV
+            </button>
+          </div>
+        </header>
+      ) : (
+        <header>
+          <div class="logo">
+            Expense<span>Tracker</span>
+          </div>
+        </header>
+      )}
     </>
   );
 };
