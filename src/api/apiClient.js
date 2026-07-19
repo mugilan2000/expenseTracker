@@ -1,4 +1,4 @@
-const BASE_URL = 'http://api.exptracker.in/api';
+const BASE_URL = 'https://api.exptracker.in/api';
 
 export const fetchData = async () => {
   try {
