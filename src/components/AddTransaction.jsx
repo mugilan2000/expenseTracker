@@ -63,7 +63,7 @@ const AddTransaction = ({ allTransactions, refreshData }) => {
     const payload = {
       name: description,
       amount: Number(amount),
-        date: date,
+        expDate: date,
         payment: payment,
         category: activeCat,
         type: activeType,
