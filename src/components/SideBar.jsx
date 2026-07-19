@@ -31,7 +31,7 @@ const SideBar = ({ allTransactions }) => {
     const currentMonthExpenses = transactions
       .filter(
         (t) =>
-          new Date(t.date).toLocaleString("en-IN", {
+          new Date(t.expDate).toLocaleString("en-IN", {
             month: "long",
             year: "numeric",
           }) ===
@@ -55,7 +55,7 @@ const SideBar = ({ allTransactions }) => {
 
   function renderStreak() {
     let transactions = allTransactions;
-    const daysSet = new Set(transactions.map((t) => t.date));
+    const daysSet = new Set(transactions.map((t) => t.expDate));
     setDays(daysSet);
   }
 

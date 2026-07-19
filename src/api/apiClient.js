@@ -1,8 +1,8 @@
-const BASE_URL = 'https://v2jpvqk9l2.execute-api.us-east-1.amazonaws.com/Dev';
+const BASE_URL = 'http://api.exptracker.in:8080/api';
 
 export const fetchData = async () => {
   try {
-    const response = await fetch(`${BASE_URL}/test`, {
+    const response = await fetch(`${BASE_URL}/expenses`, {
       method: 'GET',
       headers: {'Content-Type': 'application/json'},
     });
@@ -20,7 +20,7 @@ export const fetchData = async () => {
 
 export const postData = async (payload) => {
   try {
-    const response = await fetch(`${BASE_URL}/test`, {
+    const response = await fetch(`${BASE_URL}/expenses`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -40,7 +40,7 @@ export const postData = async (payload) => {
 
 export const deleteData = async (payload) => {
   try {
-    const response = await fetch(`${BASE_URL}/test`, {
+    const response = await fetch(`${BASE_URL}/expenses/${payload.id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

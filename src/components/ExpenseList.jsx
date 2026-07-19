@@ -106,7 +106,7 @@ const ExpenseList = ({ allTransactions, refreshData }) => {
                 <div className="expense-info">
                   <div className="expense-name">{t.name}</div>
                   <div className="expense-meta">
-                    <span>{new Date(t.date).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</span>
+                    <span>{new Date(t.expDate).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</span>
                     <span style={{ color: CATEGORIES[t.category].color }}>{t.category}</span>
                     <span
                       style={{
