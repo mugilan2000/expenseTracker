@@ -38,7 +38,7 @@ const Dashboard = ({ allTransactions }) => {
       const biggest = exp
         .filter(
           (t) =>
-            new Date(t.date).toLocaleString("en-IN", {
+            new Date(t.expDate).toLocaleString("en-IN", {
               month: "long",
               year: "numeric",
             }) ===
