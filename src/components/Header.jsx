@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 
-const Header = ({ allTransactions, accessToken }) => {
+const Header = ({ allTransactions, accessToken, theme, toggleTheme }) => {
+  const [isDataViewOpen, setIsDataViewOpen] = useState(false);
+  const [selectedDataView, setSelectedDataView] = useState("overall");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const isDarkMode = theme === "dark";
+
   function exportCSV() {
     let transactions = allTransactions;
     if (!transactions.length) {
@@ -9,52 +14,342 @@ const Header = ({ allTransactions, accessToken }) => {
     }
     const header = "ID,Date,Description,Category,Type,Amount,Payment\n";
     const rows = transactions
-      .filter(
-        (t) =>
-          new Date(t.date).toLocaleString("en-IN", {
-            month: "long",
-            year: "numeric",
-          }) ===
-          new Date().toLocaleString("en-IN", {
-            month: "long",
-            year: "numeric",
-          }),
-      )
       .map(
         (t) =>
-          `${t.id},${t.date},"${t.name}",${t.category},${t.type},${t.amount},${t.payment}`,
+          `${t.id},${t.expDate},"${t.name}",${t.category},${t.type},${t.amount},${t.payment}`,
       )
       .join("\n");
     const blob = new Blob([header + rows], { type: "text/csv" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download =
-      new Date().toLocaleString("en-IN", { month: "long", year: "numeric" }) +
-      " Report.csv";
+    a.download = "Data Export.csv";
     a.click();
   }
+
+  const closeMobileMenu = () => setIsMobileMenuOpen(false);
+
   return (
     <>
       {accessToken ? (
         <header>
-          <div class="logo">
+          <div className="logo">
             Expense<span>Tracker</span>
           </div>
 
-          <div class="header-actions">
+          <div className="header-actions desktop-actions">
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={toggleTheme}
+              title={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                minWidth: "92px",
+                justifyContent: "center",
+              }}
+            >
+              <span>{isDarkMode ? "☀️" : "🌙"}</span>
+              <span>{isDarkMode ? "Light" : "Dark"}</span>
+            </button>
             <span
               id="month-label"
               style={{ fontSize: "13px", color: "var(--text3)" }}
             ></span>
-            <button class="btn btn-ghost" onClick={exportCSV}>
+            <div style={{ position: "relative" }}>
+              <button
+                type="button"
+                onClick={() => setIsDataViewOpen((prev) => !prev)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "8px 12px",
+                  borderRadius: "999px",
+                  border: "1px solid rgba(255, 255, 255, 0.12)",
+                  background: "linear-gradient(135deg, var(--bg2), var(--bg3))",
+                  color: "var(--text2)",
+                  fontSize: "13px",
+                  fontWeight: 600,
+                  outline: "none",
+                  boxShadow: "0 6px 18px rgba(0, 0, 0, 0.14)",
+                  cursor: "pointer",
+                }}
+              >
+                <span>{selectedDataView === "monthly" ? "Monthly" : "Overall"}</span>
+                <span style={{ fontSize: "10px", opacity: 0.8 }}>▾</span>
+              </button>
+
+              {isDataViewOpen && (
+                <ul
+                  style={{
+                    position: "absolute",
+                    top: "calc(100% + 8px)",
+                    left: 0,
+                    minWidth: "140px",
+                    margin: 0,
+                    padding: "6px",
+                    listStyle: "none",
+                    borderRadius: "14px",
+                    border: "1px solid rgba(255, 255, 255, 0.12)",
+                    background: "var(--surface)",
+                    boxShadow: "0 10px 24px rgba(0, 0, 0, 0.2)",
+                    zIndex: 20,
+                  }}
+                >
+                  <li
+                    onClick={() => {
+                      setSelectedDataView("overall");
+                      setIsDataViewOpen(false);
+                    }}
+                    style={{
+                      padding: "10px 12px",
+                      borderRadius: "10px",
+                      cursor: "pointer",
+                      color: "var(--text2)",
+                      fontSize: "13px",
+                      fontWeight: 600,
+                      background:
+                        selectedDataView === "overall"
+                          ? "rgba(255, 255, 255, 0.08)"
+                          : "transparent",
+                    }}
+                  >
+                    Overall
+                  </li>
+                  <li
+                    onClick={() => {
+                      setSelectedDataView("monthly");
+                      setIsDataViewOpen(false);
+                    }}
+                    style={{
+                      padding: "10px 12px",
+                      borderRadius: "10px",
+                      cursor: "pointer",
+                      color: "var(--text2)",
+                      fontSize: "13px",
+                      fontWeight: 600,
+                      background:
+                        selectedDataView === "monthly"
+                          ? "rgba(255, 255, 255, 0.08)"
+                          : "transparent",
+                    }}
+                  >
+                    Monthly
+                  </li>
+                </ul>
+              )}
+            </div>
+            <button className="btn btn-ghost" onClick={exportCSV}>
+              Export CSV
+            </button>
+          </div>
+
+          <button
+            type="button"
+            className="mobile-menu-toggle"
+            onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+            aria-label="Open menu"
+          >
+            ☰
+          </button>
+
+          <div
+            className={`mobile-menu-backdrop ${isMobileMenuOpen ? "open" : ""}`}
+            onClick={closeMobileMenu}
+          />
+
+          <div className={`mobile-menu-panel ${isMobileMenuOpen ? "open" : ""}`}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "8px",
+              }}
+            >
+              <span style={{ fontSize: "13px", fontWeight: 700, color: "var(--text2)" }}>
+                Menu
+              </span>
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={closeMobileMenu}
+                style={{ padding: "6px 10px" }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <button
+              type="button"
+              className="btn btn-ghost mobile-action-btn"
+              onClick={() => {
+                toggleTheme();
+                closeMobileMenu();
+              }}
+              title={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
+            >
+              <span>{isDarkMode ? "☀️" : "🌙"}</span>
+              <span>{isDarkMode ? " Light" : " Dark"}</span>
+            </button>
+
+            <div style={{ position: "relative", width: "100%" }}>
+              <button
+                type="button"
+                className="btn btn-ghost mobile-action-btn"
+                onClick={() => setIsDataViewOpen((prev) => !prev)}
+              >
+                <span>{selectedDataView === "monthly" ? "Monthly" : "Overall"}</span>
+                <span style={{ marginLeft: "6px" }}>▾</span>
+              </button>
+
+              {isDataViewOpen && (
+                <ul
+                  style={{
+                    position: "absolute",
+                    top: "calc(100% + 8px)",
+                    left: 0,
+                    right: 0,
+                    margin: 0,
+                    padding: "6px",
+                    listStyle: "none",
+                    borderRadius: "14px",
+                    border: "1px solid rgba(255, 255, 255, 0.12)",
+                    background: "var(--surface)",
+                    boxShadow: "0 10px 24px rgba(0, 0, 0, 0.2)",
+                    zIndex: 20,
+                  }}
+                >
+                  <li
+                    onClick={() => {
+                      setSelectedDataView("overall");
+                      setIsDataViewOpen(false);
+                      closeMobileMenu();
+                    }}
+                    style={{
+                      padding: "10px 12px",
+                      borderRadius: "10px",
+                      cursor: "pointer",
+                      color: "var(--text2)",
+                      fontSize: "13px",
+                      fontWeight: 600,
+                      background:
+                        selectedDataView === "overall"
+                          ? "rgba(255, 255, 255, 0.08)"
+                          : "transparent",
+                    }}
+                  >
+                    Overall
+                  </li>
+                  <li
+                    onClick={() => {
+                      setSelectedDataView("monthly");
+                      setIsDataViewOpen(false);
+                      closeMobileMenu();
+                    }}
+                    style={{
+                      padding: "10px 12px",
+                      borderRadius: "10px",
+                      cursor: "pointer",
+                      color: "var(--text2)",
+                      fontSize: "13px",
+                      fontWeight: 600,
+                      background:
+                        selectedDataView === "monthly"
+                          ? "rgba(255, 255, 255, 0.08)"
+                          : "transparent",
+                    }}
+                  >
+                    Monthly
+                  </li>
+                </ul>
+              )}
+            </div>
+
+            <button
+              className="btn btn-ghost mobile-action-btn"
+              onClick={() => {
+                exportCSV();
+                closeMobileMenu();
+              }}
+            >
               Export CSV
             </button>
           </div>
         </header>
       ) : (
         <header>
-          <div class="logo">
+          <div className="logo">
             Expense<span>Tracker</span>
+          </div>
+          <div className="header-actions desktop-actions">
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={toggleTheme}
+              title={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                minWidth: "92px",
+                justifyContent: "center",
+              }}
+            >
+              <span>{isDarkMode ? "☀️" : "🌙"}</span>
+              <span>{isDarkMode ? "Light" : "Dark"}</span>
+            </button>
+          </div>
+
+          <button
+            type="button"
+            className="mobile-menu-toggle"
+            onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+            aria-label="Open menu"
+          >
+            ☰
+          </button>
+
+          <div
+            className={`mobile-menu-backdrop ${isMobileMenuOpen ? "open" : ""}`}
+            onClick={closeMobileMenu}
+          />
+
+          <div className={`mobile-menu-panel ${isMobileMenuOpen ? "open" : ""}`}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "8px",
+              }}
+            >
+              <span style={{ fontSize: "13px", fontWeight: 700, color: "var(--text2)" }}>
+                Menu
+              </span>
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={closeMobileMenu}
+                style={{ padding: "6px 10px" }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <button
+              type="button"
+              className="btn btn-ghost mobile-action-btn"
+              onClick={() => {
+                toggleTheme();
+                closeMobileMenu();
+              }}
+            >
+              <span>{isDarkMode ? "☀️" : "🌙"}</span>
+              <span>{isDarkMode ? " Light" : " Dark"}</span>
+            </button>
           </div>
         </header>
       )}

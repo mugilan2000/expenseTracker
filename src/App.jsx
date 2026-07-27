@@ -1,7 +1,4 @@
-import { useEffect, useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "./assets/vite.svg";
-import heroImg from "./assets/hero.png";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import Header from "./components/Header";
 import Dashboard from "./components/Dashboard";
@@ -15,13 +12,43 @@ import { registerSW } from "virtual:pwa-register";
 registerSW({ immediate: true });
 
 function App() {
-  const [count, setCount] = useState(0);
   const [allTransactions, setAllTransactions] = useState([]);
   const [accessToken, setAccessToken] = useState(
     localStorage.getItem("accessToken") || null,
   );
   const [userId, setUserId] = useState(localStorage.getItem("userId") || null);
   const [uname, setUname] = useState(localStorage.getItem("username") || null);
+  const [theme, setTheme] = useState(() => {
+    if (typeof window === "undefined") return "dark";
+
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) return savedTheme;
+
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  });
+  const [isThemeSwitching, setIsThemeSwitching] = useState(false);
+  const themeTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    document.documentElement.style.colorScheme = theme;
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    if (themeTimeoutRef.current) {
+      clearTimeout(themeTimeoutRef.current);
+    }
+
+    setIsThemeSwitching(true);
+    setTheme((currentTheme) => (currentTheme === "dark" ? "light" : "dark"));
+
+    themeTimeoutRef.current = setTimeout(() => {
+      setIsThemeSwitching(false);
+    }, 320);
+  };
 
   const refreshData = async () => {
     const existingData = JSON.parse(localStorage.getItem("transactions"));
@@ -39,16 +66,46 @@ function App() {
     refreshData();
   }, [accessToken]);
 
+  useEffect(() => {
+    return () => {
+      if (themeTimeoutRef.current) {
+        clearTimeout(themeTimeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
     <>
-      {!accessToken && ( <> <Header accessToken={accessToken} /> <Login setAccessToken={setAccessToken} setUserId={setUserId} setUname={setUname} /> </>)}
+      {!accessToken && (
+        <>
+          <div className={`theme-shell ${isThemeSwitching ? "theme-switching" : ""}`}>
+            <div className={`theme-overlay ${isThemeSwitching ? "active" : ""}`} />
+            <Header
+              accessToken={accessToken}
+              theme={theme}
+              toggleTheme={toggleTheme}
+            />
+            <Login
+              setAccessToken={setAccessToken}
+              setUserId={setUserId}
+              setUname={setUname}
+            />
+          </div>
+        </>
+      )}
       {accessToken && (
         <>
-          <div className="app">
-            <Header allTransactions={allTransactions}  accessToken={accessToken}/>
+          <div className={`app ${isThemeSwitching ? "theme-switching" : ""}`}>
+            <div className={`theme-overlay ${isThemeSwitching ? "active" : ""}`} />
+            <Header
+              allTransactions={allTransactions}
+              accessToken={accessToken}
+              theme={theme}
+              toggleTheme={toggleTheme}
+            />
             <main>
               <Dashboard allTransactions={allTransactions} />
-              <div class="content-grid">
+              <div className="content-grid">
                 <div>
                   <AddTransaction
                     allTransactions={allTransactions}

@@ -17,8 +17,81 @@
   --amber: #f9b44a;
   --blue: #5aabff;
   --teal: #36c6c6;
+  --bg2: #12151a;
+  --bg3: #1c2130;
   --font-display: "DM Serif Display", serif;
   --font: "DM Sans", sans-serif;
   --r: 12px;
   --r2: 8px;
+}
+
+[data-theme="light"] {
+  --bg: #f3f6fb;
+  --surface: #ffffff;
+  --surface2: #f8fafc;
+  --surface3: #eef2f7;
+  --border: #d7e0eb;
+  --border2: #bcc8d4;
+  --text: #0f172a;
+  --text2: #475569;
+  --text3: #64748b;
+  --accent: #6d5dfc;
+  --accent2: #8b7bff;
+  --green: #1f9d64;
+  --red: #e15b5b;
+  --amber: #ca7f0f;
+  --blue: #3b82f6;
+  --teal: #0f766e;
+  --bg2: #f5f7ff;
+  --bg3: #e6ebff;
+}
+
+html {
+  background: var(--bg);
+}
+
+html {
+  background: var(--bg);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.theme-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 999;
+}
+
+.theme-overlay.active {
+  opacity: 0;
+}
+
+.app,
+.theme-shell {
+  position: relative;
+}
+
+.theme-switching {
+  opacity: 1;
+  filter: saturate(1);
+}
+
+.card,
+.stat-card,
+.expense-item,
+.form-group input,
+.form-group select,
+.cat-chip,
+.type-btn,
+.btn,
+.expense-icon,
+header,
+main {
+  transition: none;
 }
