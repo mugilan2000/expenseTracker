@@ -165,7 +165,7 @@ const ExpenseList = ({ allTransactions, refreshData }) => {
             <div class="empty"><div class="empty-icon">💸</div><div>No transactions yet</div></div>
           )}
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "12px", gap: "10px", flexWrap: "nowrap", width: "100%", overflowX: "auto" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "12px", gap: "10px", flexWrap: "nowrap", overflowX: "auto" }}>
           <button
             className="btn btn-ghost"
             onClick={handleRefresh}
