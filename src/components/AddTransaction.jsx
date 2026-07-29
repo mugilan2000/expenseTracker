@@ -70,8 +70,7 @@ const AddTransaction = ({ allTransactions, refreshData }) => {
       };
 
     await addData(payload);
-    localStorage.removeItem("transactions");
-    await refreshData();
+    await refreshData(true);
     toast("Transaction Added");
     setDescription("");
     setAmount("");

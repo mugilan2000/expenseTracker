@@ -220,6 +220,25 @@ main {
 .form-group select option {
   background: var(--surface2);
 }
+select {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 9px 12px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  transition: border 0.15s;
+  width: 100%;
+}
+input:focus,
+select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+select option {
+  background: var(--surface2);
+}
 .cat-chips {
   display: flex;
   flex-wrap: wrap;

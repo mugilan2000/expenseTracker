@@ -50,16 +50,27 @@ function App() {
     }, 320);
   };
 
-  const refreshData = async () => {
-    const existingData = JSON.parse(localStorage.getItem("transactions"));
-    if (existingData && existingData.length > 0) {
-      setAllTransactions(existingData);
-      return;
+  const refreshData = async (force = false) => {
+    const storedTransactions = localStorage.getItem("transactions");
+    let existingData = null;
+
+    if (storedTransactions) {
+      try {
+        existingData = JSON.parse(storedTransactions);
+      } catch (error) {
+        console.error("Failed to parse cached transactions:", error);
+      }
     }
+
+    if (!force && existingData && existingData.length > 0) {
+      setAllTransactions(existingData);
+      return existingData;
+    }
+
     const data = await getData();
-    localStorage.removeItem("transactions");
     localStorage.setItem("transactions", JSON.stringify(data));
     setAllTransactions(data);
+    return data;
   };
 
   useEffect(() => {

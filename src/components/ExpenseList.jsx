@@ -5,6 +5,9 @@ const ExpenseList = ({ allTransactions, refreshData }) => {
   const [transactions, setTransactions] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState("all");
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(6);
 
     const CATEGORIES = {
     Food: { emoji: "🍽", color: "#f46a6a" },
@@ -36,6 +39,7 @@ const ExpenseList = ({ allTransactions, refreshData }) => {
     });
 
     setTransactions(list);
+    setCurrentPage(1);
   };
 
    const deleteTransaction = async (id) => {
@@ -43,14 +47,40 @@ const ExpenseList = ({ allTransactions, refreshData }) => {
         id: id
     }
     await deleteExpense(payload);
-    localStorage.removeItem("transactions");
-    await refreshData();
+    await refreshData(true);
     toast("Transaction Deleted");
   }
+
+  const handleRefresh = async () => {
+    if (isRefreshing) return;
+
+    setIsRefreshing(true);
+    try {
+      await refreshData(true);
+      toast("Transactions refreshed");
+    } catch (error) {
+      console.error("Failed to refresh transactions:", error);
+      toast("Failed to refresh transactions");
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   useEffect(() => {
     applyFilter();
   }, [filter, searchQuery, allTransactions]);
+
+  const totalPages = Math.max(1, Math.ceil(transactions.length / pageSize));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const visibleTransactions = transactions.slice(
+    (safeCurrentPage - 1) * pageSize,
+    safeCurrentPage * pageSize,
+  );
+
+  const handlePageChange = (nextPage) => {
+    setCurrentPage(Math.max(1, Math.min(totalPages, nextPage)));
+  };
+
   return (
     <>
       <div className="card">
@@ -95,7 +125,7 @@ const ExpenseList = ({ allTransactions, refreshData }) => {
         </div>
         <div className="expense-list" id="expense-list">
           {transactions.length ? (
-            transactions.map((t) => (
+            visibleTransactions.map((t) => (
               <div className="expense-item" key={t.id}>
                 <div
                   className="expense-icon"
@@ -134,6 +164,54 @@ const ExpenseList = ({ allTransactions, refreshData }) => {
           ) : (
             <div class="empty"><div class="empty-icon">💸</div><div>No transactions yet</div></div>
           )}
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "12px", gap: "10px", flexWrap: "wrap" }}>
+          <button
+            className="btn btn-ghost"
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            style={{ display: "flex", alignItems: "center", gap: "6px" }}
+          >
+            <span>{isRefreshing ? "⏳" : "↻"}</span>
+            <span>{isRefreshing ? "Refreshing..." : "Refresh"}</span>
+          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginLeft: "auto" }}>
+            <label style={{ fontSize: "12px", color: "var(--text3)" }} htmlFor="page-size-select">
+              Show
+            </label>
+            <select
+              id="page-size-select"
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+              style={{
+                background: "var(--surface2)",
+                // borderRadius: "999px",
+                padding: "6px 10px",
+                color: "var(--text)",
+                fontSize: "12px",
+              }}
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+            </select>
+            {totalPages > 1 && (
+              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <button className="btn btn-ghost" onClick={() => handlePageChange(safeCurrentPage - 1)} disabled={safeCurrentPage === 1} style={{ padding: "6px 10px" }}>
+                  Prev
+                </button>
+                <span style={{ fontSize: "12px", color: "var(--text3)" }}>
+                  {safeCurrentPage}/{totalPages}
+                </span>
+                <button className="btn btn-ghost" onClick={() => handlePageChange(safeCurrentPage + 1)} disabled={safeCurrentPage === totalPages} style={{ padding: "6px 10px" }}>
+                  Next
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </>
