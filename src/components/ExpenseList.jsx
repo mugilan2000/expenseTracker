@@ -165,18 +165,18 @@ const ExpenseList = ({ allTransactions, refreshData }) => {
             <div class="empty"><div class="empty-icon">💸</div><div>No transactions yet</div></div>
           )}
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "12px", gap: "10px", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "12px", gap: "10px", flexWrap: "nowrap", width: "100%", overflowX: "auto" }}>
           <button
             className="btn btn-ghost"
             onClick={handleRefresh}
             disabled={isRefreshing}
-            style={{ display: "flex", alignItems: "center", gap: "6px" }}
+            style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}
           >
             <span>{isRefreshing ? "⏳" : "↻"}</span>
             <span>{isRefreshing ? "Refreshing..." : "Refresh"}</span>
           </button>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginLeft: "auto" }}>
-            <label style={{ fontSize: "12px", color: "var(--text3)" }} htmlFor="page-size-select">
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginLeft: "auto", flexWrap: "nowrap", minWidth: 0, flexShrink: 0 }}>
+            <label style={{ fontSize: "12px", color: "var(--text3)", flexShrink: 0 }} htmlFor="page-size-select">
               Show
             </label>
             <select
@@ -192,6 +192,7 @@ const ExpenseList = ({ allTransactions, refreshData }) => {
                 padding: "6px 10px",
                 color: "var(--text)",
                 fontSize: "12px",
+                flexShrink: 0,
               }}
             >
               <option value={5}>5</option>

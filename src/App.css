@@ -229,7 +229,6 @@ select {
   font-family: var(--font);
   font-size: 14px;
   transition: border 0.15s;
-  width: 100%;
 }
 input:focus,
 select:focus {
