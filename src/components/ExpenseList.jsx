@@ -95,6 +95,20 @@ const ExpenseList = ({ allTransactions, refreshData }) => {
           <div className="card-title" style={{ marginBottom: "0" }}>
             Transactions
           </div>
+          <div>
+            <button
+            className="btn btn-ghost"
+            id="refresh-btn"
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}
+          >
+            <span className="refresh-icon">{isRefreshing ? "⏳" : "↻"}</span>
+            <span className="refresh-text">
+              {isRefreshing ? "Refreshing..." : "Refresh"}
+            </span>
+          </button>
+          </div>
         </div>
         <div className="filter-bar">
           <input
@@ -165,16 +179,7 @@ const ExpenseList = ({ allTransactions, refreshData }) => {
             <div class="empty"><div class="empty-icon">💸</div><div>No transactions yet</div></div>
           )}
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "12px", gap: "10px", flexWrap: "nowrap", overflowX: "auto" }}>
-          <button
-            className="btn btn-ghost"
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-            style={{ display: "flex", alignItems: "center", gap: "6px", flexShrink: 0 }}
-          >
-            <span>{isRefreshing ? "⏳" : "↻"}</span>
-            <span>{isRefreshing ? "Refreshing..." : "Refresh"}</span>
-          </button>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "12px", gap: "10px", flexWrap: "wrap", overflowX: "auto" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px", marginLeft: "auto", flexWrap: "nowrap", minWidth: 0, flexShrink: 0 }}>
             <label style={{ fontSize: "12px", color: "var(--text3)", flexShrink: 0 }} htmlFor="page-size-select">
               Show
