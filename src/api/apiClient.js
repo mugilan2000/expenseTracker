@@ -1,5 +1,5 @@
-// const BASE_URL = 'https://api.exptracker.in/api';
-const BASE_URL = 'http://localhost:8080/api';
+const BASE_URL = 'https://api.exptracker.in/api';
+//const BASE_URL = 'http://localhost:8080/api';
 
 export const fetchData = async () => {
   try {
