@@ -1,10 +1,11 @@
-const BASE_URL = 'https://api.exptracker.in/api';
+// const BASE_URL = 'https://api.exptracker.in/api';
+const BASE_URL = 'http://localhost:8080/api';
 
 export const fetchData = async () => {
   try {
     const response = await fetch(`${BASE_URL}/expenses`, {
       method: 'GET',
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`},
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -24,6 +25,7 @@ export const postData = async (payload) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
       },
       body: JSON.stringify(payload),
     });
@@ -44,6 +46,7 @@ export const deleteData = async (payload) => {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
       },
       body: JSON.stringify(payload),
     });
@@ -60,7 +63,7 @@ export const deleteData = async (payload) => {
 
 export const loginUser = async (payload) => {
   try {
-    const response = await fetch(`${BASE_URL}/login`, {
+    const response = await fetch(`${BASE_URL}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -80,7 +83,7 @@ export const loginUser = async (payload) => {
 
 export const registerUser = async (payload) => {
   try {
-    const response = await fetch(`${BASE_URL}/register`, {
+    const response = await fetch(`${BASE_URL}/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

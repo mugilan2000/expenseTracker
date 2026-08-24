@@ -98,6 +98,20 @@ main {
   margin: 0 auto;
   width: 100%;
 }
+
+.app-footer {
+  margin-top: auto;
+  padding: 16px 28px 24px;
+  text-align: center;
+  color: var(--text3);
+  font-size: 13px;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.app-footer p {
+  margin: 0;
+}
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

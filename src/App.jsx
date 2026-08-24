@@ -7,12 +7,20 @@ import ExpenseList from "./components/ExpenseList";
 import SideBar from "./components/SideBar";
 import { getData } from "./api/expenseTrackerAPI";
 import Login from "./components/Login";
+import Footer from "./components/Footer";
 import { registerSW } from "virtual:pwa-register";
+import {
+  filterTransactionsByPeriod,
+  REPORTING_PERIODS,
+} from "./utils/transactionFilters";
 
 registerSW({ immediate: true });
 
 function App() {
   const [allTransactions, setAllTransactions] = useState([]);
+  const [selectedDataView, setSelectedDataView] = useState(
+    REPORTING_PERIODS.OVERALL,
+  );
   const [accessToken, setAccessToken] = useState(
     localStorage.getItem("accessToken") || null,
   );
@@ -77,6 +85,11 @@ function App() {
     refreshData();
   }, [accessToken]);
 
+  const reportingTransactions = filterTransactionsByPeriod(
+    allTransactions,
+    selectedDataView,
+  );
+
   useEffect(() => {
     return () => {
       if (themeTimeoutRef.current) {
@@ -101,6 +114,7 @@ function App() {
               setUserId={setUserId}
               setUname={setUname}
             />
+            <Footer />
           </div>
         </>
       )}
@@ -113,9 +127,11 @@ function App() {
               accessToken={accessToken}
               theme={theme}
               toggleTheme={toggleTheme}
+              selectedDataView={selectedDataView}
+              setSelectedDataView={setSelectedDataView}
             />
             <main>
-              <Dashboard allTransactions={allTransactions} />
+              <Dashboard allTransactions={reportingTransactions} />
               <div className="content-grid">
                 <div>
                   <AddTransaction
@@ -123,13 +139,17 @@ function App() {
                     refreshData={refreshData}
                   />
                   <ExpenseList
-                    allTransactions={allTransactions}
+                    allTransactions={reportingTransactions}
                     refreshData={refreshData}
                   />
                 </div>
-                <SideBar allTransactions={allTransactions} />
+                <SideBar
+                  allTransactions={allTransactions}
+                  reportingTransactions={reportingTransactions}
+                />
               </div>
             </main>
+            <Footer />
           </div>
           <div id="toast"></div>
         </>

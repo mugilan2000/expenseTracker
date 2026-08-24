@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fmt } from "../api/expenseTrackerAPI";
 
-const SideBar = ({ allTransactions }) => {
+const SideBar = ({ allTransactions, reportingTransactions = allTransactions }) => {
   const CATEGORIES = {
     Food: { emoji: "🍽", color: "#f46a6a" },
     Transport: { emoji: "🚌", color: "#5aabff" },
@@ -60,7 +60,7 @@ const SideBar = ({ allTransactions }) => {
   }
 
   function renderCatChart() {
-    let transactions = allTransactions;
+    let transactions = reportingTransactions;
     const totals = {};
     transactions
     .filter((t) => t.type === "expense")
@@ -79,7 +79,7 @@ const SideBar = ({ allTransactions }) => {
     renderBudget();
     renderStreak();
     renderCatChart();
-  }, [budget, allTransactions]);
+  }, [budget, allTransactions, reportingTransactions]);
   return (
     <>
       <div class="sidebar">

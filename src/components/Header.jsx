@@ -1,8 +1,14 @@
 import React, { useState } from "react";
 
-const Header = ({ allTransactions, accessToken, theme, toggleTheme }) => {
+const Header = ({
+  allTransactions,
+  accessToken,
+  theme,
+  toggleTheme,
+  selectedDataView = "overall",
+  setSelectedDataView,
+}) => {
   const [isDataViewOpen, setIsDataViewOpen] = useState(false);
-  const [selectedDataView, setSelectedDataView] = useState("overall");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const isDarkMode = theme === "dark";
 
@@ -59,23 +65,9 @@ const Header = ({ allTransactions, accessToken, theme, toggleTheme }) => {
             ></span>
             <div style={{ position: "relative" }}>
               <button
+              className="btn btn-ghost"
                 type="button"
                 onClick={() => setIsDataViewOpen((prev) => !prev)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "8px 12px",
-                  borderRadius: "999px",
-                  border: "1px solid rgba(255, 255, 255, 0.12)",
-                  background: "linear-gradient(135deg, var(--bg2), var(--bg3))",
-                  color: "var(--text2)",
-                  fontSize: "13px",
-                  fontWeight: 600,
-                  outline: "none",
-                  boxShadow: "0 6px 18px rgba(0, 0, 0, 0.14)",
-                  cursor: "pointer",
-                }}
               >
                 <span>{selectedDataView === "monthly" ? "Monthly" : "Overall"}</span>
                 <span style={{ fontSize: "10px", opacity: 0.8 }}>▾</span>

@@ -32,30 +32,32 @@ const Login = ({ setAccessToken, setUserId, setUname }) => {
     event.preventDefault();
     setIsLogin(true);
     setAccessToken("dummyAccessToken");
-    localStorage.setItem("accessToken", "dummyAccessToken");
-    // try {
-    //   setMessage("Validating User...");
-    //   const payload = {
-    //     email: loginEmail,
-    //     password: loginPassword,
-    //   };
-    //   const response = await login(payload);
+    // localStorage.setItem("accessToken", "dummyAccessToken");
+    try {
+      setMessage("Validating User...");
+      const payload = {
+        email: loginEmail,
+        password: loginPassword,
+      };
+      const response = await login(payload);
       
-    //   if (response.length > 25) {
-    //     const decoded = jwtDecode(response);
-    //     setAccessToken(response);
-    //     localStorage.setItem("accessToken", response);
-    //     setUserId(decoded.userId);
-    //     localStorage.setItem("userId", decoded.userId);
-    //     setUname(decoded.username);
-    //     localStorage.setItem("username", decoded.username);
-    //   }
-    //   else{
-    //     setMessage("Invalid Username or Password");
-    //   }
-    // } catch (error) {
-    //   setMessage("Invalid Username or Password");
-    // }
+      if (response.token) {
+        
+        setAccessToken(response.token);
+        setUserId(response.userId);
+        setUname(response.username);
+        setMessage(response.message);
+
+        localStorage.setItem("accessToken", response.token);
+        localStorage.setItem("userId", response.userId);
+        localStorage.setItem("username", response.username);
+      }
+      else{
+        setMessage("Invalid Username or Password");
+      }
+    } catch (error) {
+      setMessage("Invalid Username or Password");
+    }
   };
 
   return (
