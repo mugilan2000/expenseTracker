@@ -60,6 +60,9 @@ const Dashboard = ({ allTransactions }) => {
 
   return (
     <>
+    <div>
+      <h3 className="stat-label" style={{ color: "var(--text)" }}>Hello, {localStorage.getItem("username")}</h3>
+    </div>
       <div class="stats-grid">
         <div class="stat-card green">
           <div class="stat-label">Total Income</div>

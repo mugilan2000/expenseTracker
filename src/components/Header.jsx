@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Header = ({
   allTransactions,
@@ -11,6 +12,8 @@ const Header = ({
   const [isDataViewOpen, setIsDataViewOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const isDarkMode = theme === "dark";
+
+  const navigate = useNavigate();
 
   function exportCSV() {
     let transactions = allTransactions;
@@ -33,6 +36,12 @@ const Header = ({
   }
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
+
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("transactions");
+    navigate("/login");
+  }
 
   return (
     <>
@@ -135,6 +144,9 @@ const Header = ({
             </div>
             <button className="btn btn-ghost" onClick={exportCSV}>
               Export CSV
+            </button>
+            <button className="btn btn-ghost" onClick={handleLogout}>
+              Logout
             </button>
           </div>
 
@@ -268,6 +280,9 @@ const Header = ({
               }}
             >
               Export CSV
+            </button>
+             <button className="btn btn-ghost mobile-action-btn" onClick={handleLogout}>
+              Logout
             </button>
           </div>
         </header>

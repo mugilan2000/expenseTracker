@@ -13,6 +13,11 @@ import {
   filterTransactionsByPeriod,
   REPORTING_PERIODS,
 } from "./utils/transactionFilters";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Main from "./pages/Main";
+import ProtectedRoute from "./utils/ProtectedRoute";
+import OAuthSuccess from "./utils/OAuthSuccess";
+import AuthPage from "./pages/AuthPage";
 
 registerSW({ immediate: true });
 
@@ -82,6 +87,8 @@ function App() {
   };
 
   useEffect(() => {
+    if (!accessToken) return;
+
     refreshData();
   }, [accessToken]);
 
@@ -100,7 +107,7 @@ function App() {
 
   return (
     <>
-      {!accessToken && (
+      {/* {!accessToken && (
         <>
           <div className={`theme-shell ${isThemeSwitching ? "theme-switching" : ""}`}>
             <div className={`theme-overlay ${isThemeSwitching ? "active" : ""}`} />
@@ -153,7 +160,15 @@ function App() {
           </div>
           <div id="toast"></div>
         </>
-      )}
+      )} */}
+
+      <BrowserRouter>
+      <Routes>
+        <Route path="/oauth-success" element={<OAuthSuccess />} />
+        <Route path="/login" element={<AuthPage setAccessToken={setAccessToken} accessToken={accessToken} theme={theme} toggleTheme={toggleTheme} setUserId={setUserId} setUname={setUname} isThemeSwitching={isThemeSwitching} />} />
+        <Route path="/" element={<ProtectedRoute><Main allTransactions={allTransactions} isThemeSwitching={isThemeSwitching} accessToken={accessToken} theme={theme} toggleTheme={toggleTheme} selectedDataView={selectedDataView} setSelectedDataView={setSelectedDataView} reportingTransactions={reportingTransactions} refreshData={refreshData} /></ProtectedRoute>} />
+      </Routes>
+      </BrowserRouter>
     </>
   );
 }

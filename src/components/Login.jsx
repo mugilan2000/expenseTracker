@@ -1,6 +1,9 @@
 import React, { useEffect } from "react";
 import { login, register } from "../api/expenseTrackerAPI";
 import { jwtDecode } from "jwt-decode";
+import { Navigate, useNavigate } from "react-router-dom";
+import googleLogo from "../assets/Google_Favicon_2025.svg";
+import "../App.css";
 
 const Login = ({ setAccessToken, setUserId, setUname }) => {
   const [isLogin, setIsLogin] = React.useState(true);
@@ -13,12 +16,19 @@ const Login = ({ setAccessToken, setUserId, setUname }) => {
 
   const [message, setMessage] = React.useState("");
 
+  const navigate = useNavigate();
+
   const isLoginScreen = (value) => {
     setIsLogin(value);
+    setMessage("");
   };
 
   const handleRegister = async (event) => {
     event.preventDefault();
+    if(username === "" || email === "" || password === ""){
+      setMessage("Please fill in all fields");
+      return;
+    }
     const payload = {
       username: username,
       email: email,
@@ -30,8 +40,15 @@ const Login = ({ setAccessToken, setUserId, setUname }) => {
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    setIsLogin(true);
-    setAccessToken("dummyAccessToken");
+    if(loginEmail === ""){
+      setMessage("Please enter your email");
+      return;
+    }
+    if(loginPassword === ""){
+      setMessage("Please enter your password");
+      return;
+    }
+
     // localStorage.setItem("accessToken", "dummyAccessToken");
     try {
       setMessage("Validating User...");
@@ -51,6 +68,8 @@ const Login = ({ setAccessToken, setUserId, setUname }) => {
         localStorage.setItem("accessToken", response.token);
         localStorage.setItem("userId", response.userId);
         localStorage.setItem("username", response.username);
+
+        navigate("/");
       }
       else{
         setMessage("Invalid Username or Password");
@@ -59,6 +78,11 @@ const Login = ({ setAccessToken, setUserId, setUname }) => {
       setMessage("Invalid Username or Password");
     }
   };
+
+  const handleGoogleLogin = (event) => {
+    event.preventDefault();
+    window.location.href = "http://localhost:8080/oauth2/authorization/google";
+  }
 
   return (
     <>
@@ -84,6 +108,12 @@ const Login = ({ setAccessToken, setUserId, setUname }) => {
             <button type="submit" onClick={(e) => handleLogin(e)}>
               Login
             </button>
+            <span className="or-separator" style={{ textAlign: "center" }}>
+              OR
+            </span>
+            <button className="google-login-btn" onClick={(e) => handleGoogleLogin(e)}>
+              <span>Login with</span> <img src={googleLogo} alt="Google Logo" />
+            </button>
           </form>
           <div className="login-footer">
             <p>
@@ -100,6 +130,9 @@ const Login = ({ setAccessToken, setUserId, setUname }) => {
       ) : (
         <div className="login-container">
           <h1>Sign Up</h1>
+          <div className="response-area">
+            <span>{message}</span>
+          </div>
           <form className="login-form">
             <input
               type="text"
