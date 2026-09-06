@@ -25,7 +25,7 @@ function OAuthSuccess() {
                 "/oauth-success"
             );
 
-            window.location.href = "/";
+            window.location.href = "/expenseTracker/"; // Redirect to the main page after successful login
 
         } else {
             console.log("No token received");
