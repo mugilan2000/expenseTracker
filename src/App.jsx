@@ -128,6 +128,40 @@ function App() {
     };
 }, []);
 
+useEffect(() => {
+
+        const setupBackButton = async () => {
+
+            const listener = await CapacitorApp.addListener(
+                "backButton",
+                ({ canGoBack }) => {
+
+                    if (canGoBack) {
+                        window.history.back();
+                    } else {
+                        CapacitorApp.exitApp();
+                    }
+
+                }
+            );
+
+            return listener;
+        };
+
+        let listener;
+
+        setupBackButton().then((result) => {
+            listener = result;
+        });
+
+        return () => {
+            if (listener) {
+                listener.remove();
+            }
+        };
+
+    }, []);
+
   const reportingTransactions = filterTransactionsByPeriod(
     allTransactions,
     selectedDataView,
