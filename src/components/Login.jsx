@@ -4,6 +4,8 @@ import { jwtDecode } from "jwt-decode";
 import { Navigate, useNavigate } from "react-router-dom";
 import googleLogo from "../assets/Google_Favicon_2025.svg";
 import "../App.css";
+import { Capacitor } from "@capacitor/core";
+import { Browser } from "@capacitor/browser";
 
 const Login = ({ setAccessToken, setUserId, setUname }) => {
   const [isLogin, setIsLogin] = React.useState(true);
