@@ -25,7 +25,7 @@ jobs:
         run: npm ci
 
       - name: Build React app
-        run: npm run build
+        run: npm run build -- --mode android
 
       - name: Sync Capacitor
         run: npx cap sync android

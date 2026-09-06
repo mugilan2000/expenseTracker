@@ -162,7 +162,7 @@ function App() {
         </>
       )} */}
 
-      <BrowserRouter basename="/expenseTracker">
+      <BrowserRouter basename={import.meta.env.VITE_BASE_PATH}>
       <Routes>
         <Route path="/oauth-success" element={<OAuthSuccess />} />
         <Route path="/login" element={<AuthPage setAccessToken={setAccessToken} accessToken={accessToken} theme={theme} toggleTheme={toggleTheme} setUserId={setUserId} setUname={setUname} isThemeSwitching={isThemeSwitching} />} />

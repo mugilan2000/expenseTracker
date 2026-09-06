@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [react(), VitePWA({
       registerType: "autoUpdate",
       manifest: {
@@ -13,7 +13,7 @@ export default defineConfig({
         theme_color: "#ffffff",
         background_color: "#ffffff",
         display: "standalone",
-        start_url: "/expenseTracker/",
+        start_url: mode === "android" ? "/" : "/expenseTracker/",
         icons: [
           {
             src: "./src/assets/expenses.png",
@@ -28,5 +28,5 @@ export default defineConfig({
         ]
       }
     })],
-  base: '/expenseTracker/',
-})
+  base: mode === "android" ? "/" : "/expenseTracker/",
+}))
