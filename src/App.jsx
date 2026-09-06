@@ -162,7 +162,7 @@ function App() {
         </>
       )} */}
 
-      <BrowserRouter>
+      <BrowserRouter basename="/expenseTracker">
       <Routes>
         <Route path="/oauth-success" element={<OAuthSuccess />} />
         <Route path="/login" element={<AuthPage setAccessToken={setAccessToken} accessToken={accessToken} theme={theme} toggleTheme={toggleTheme} setUserId={setUserId} setUname={setUname} isThemeSwitching={isThemeSwitching} />} />
