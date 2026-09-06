@@ -79,19 +79,18 @@ const Login = ({ setAccessToken, setUserId, setUname }) => {
     }
   };
 
-  const handleGoogleLogin = (event) => {
+  const handleGoogleLogin = async (event) => {
     event.preventDefault();
-    //window.location.href = "https://api.exptracker.in/oauth2/authorization/google";
-    //window.location.href = "http://localhost:8080/oauth2/authorization/google";
 
     if (Capacitor.isNativePlatform()) {
-    window.location.href =
-      "https://api.exptracker.in/oauth2/authorization/google?platform=android";
-  } else {
-    window.location.href =
-      "https://api.exptracker.in/oauth2/authorization/google";
-  }
-  }
+        await Browser.open({
+            url: "https://api.exptracker.in/api/auth/google-mobile"
+        });
+    } else {
+        window.location.href =
+            "https://api.exptracker.in/oauth2/authorization/google";
+    }
+};
 
   return (
     <>
