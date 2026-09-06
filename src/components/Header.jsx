@@ -1,9 +1,11 @@
+import { Capacitor } from "@capacitor/core";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Header = ({
   allTransactions,
   accessToken,
+  setAccessToken,
   theme,
   toggleTheme,
   selectedDataView = "overall",
@@ -15,31 +17,134 @@ const Header = ({
 
   const navigate = useNavigate();
 
-  function exportCSV() {
-    let transactions = allTransactions;
-    if (!transactions.length) {
-      toast("No transactions to export");
-      return;
-    }
-    const header = "ID,Date,Description,Category,Type,Amount,Payment\n";
-    const rows = transactions
-      .map(
-        (t) =>
-          `${t.id},${t.expDate},"${t.name}",${t.category},${t.type},${t.amount},${t.payment}`,
-      )
-      .join("\n");
-    const blob = new Blob([header + rows], { type: "text/csv" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "Data Export.csv";
-    a.click();
+  // function exportCSV() {
+  //   let transactions = allTransactions;
+  //   if (!transactions.length) {
+  //     toast("No transactions to export");
+  //     return;
+  //   }
+  //   const header = "ID,Date,Description,Category,Type,Amount,Payment\n";
+  //   const rows = transactions
+  //     .map(
+  //       (t) =>
+  //         `${t.id},${t.expDate},"${t.name}",${t.category},${t.type},${t.amount},${t.payment}`,
+  //     )
+  //     .join("\n");
+  //   const blob = new Blob([header + rows], { type: "text/csv" });
+  //   const a = document.createElement("a");
+  //   a.href = URL.createObjectURL(blob);
+  //   a.download = "Data Export.csv";
+  //   a.click();
+  // }
+
+  async function exportCSV() {
+  let transactions = allTransactions;
+
+  if (!transactions.length) {
+    toast("No transactions to export");
+    return;
   }
+
+  const escapeCSV = (value) => {
+    if (value === null || value === undefined) {
+      return "";
+    }
+
+    const stringValue = String(value);
+
+    // Escape quotes and wrap values containing comma, quote or newline
+    if (
+      stringValue.includes(",") ||
+      stringValue.includes('"') ||
+      stringValue.includes("\n")
+    ) {
+      return `"${stringValue.replace(/"/g, '""')}"`;
+    }
+
+    return stringValue;
+  };
+
+  const header =
+    "ID,Date,Description,Category,Type,Amount,Payment\n";
+
+  const rows = transactions
+    .map((t) =>
+      [
+        t.id,
+        t.expDate,
+        t.name,
+        t.category,
+        t.type,
+        t.amount,
+        t.payment,
+      ]
+        .map(escapeCSV)
+        .join(",")
+    )
+    .join("\n");
+
+  const csvData = header + rows;
+
+  // Android / Capacitor
+  if (Capacitor.isNativePlatform()) {
+    try {
+      const fileName = "Data Export.csv";
+
+      // Save the CSV into the app's temporary cache
+      const result = await Filesystem.writeFile({
+        path: fileName,
+        data: csvData,
+        directory: Directory.Cache,
+        encoding: Encoding.UTF8,
+      });
+
+      // Get a URI that Android can share
+      const fileUri = await Filesystem.getUri({
+        path: fileName,
+        directory: Directory.Cache,
+      });
+
+      // Open Android's share dialog
+      await Share.share({
+        title: "Expense Tracker CSV",
+        text: "Here is my expense data.",
+        url: fileUri.uri,
+        dialogTitle: "Export Expense Data",
+      });
+
+    } catch (error) {
+      console.error("CSV export failed:", error);
+      toast("Failed to export CSV");
+    }
+
+    return;
+  }
+
+  // Normal website / browser
+  const blob = new Blob([csvData], {
+    type: "text/csv;charset=utf-8;",
+  });
+
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "Data Export.csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  URL.revokeObjectURL(url);
+}
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("transactions");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("username");
+    setAccessToken(null);
     navigate("/login");
   }
 

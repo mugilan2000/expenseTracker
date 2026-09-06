@@ -7,8 +7,6 @@ function OAuthSuccess() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        console.log("FULL URL:", window.location.href);
-        console.log("QUERY STRING:", window.location.search);
 
         const token = searchParams.get("token");
         const uname = searchParams.get("username");

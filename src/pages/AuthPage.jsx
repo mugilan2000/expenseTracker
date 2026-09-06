@@ -8,7 +8,7 @@ const AuthPage = ({ setAccessToken, accessToken, theme, toggleTheme, setUserId, 
     <div className={`theme-shell ${isThemeSwitching ? "theme-switching" : ""}`}>
             <div className={`theme-overlay ${isThemeSwitching ? "active" : ""}`} />
             <Header
-              accessToken={accessToken}
+              accessToken={null}
               theme={theme}
               toggleTheme={toggleTheme}
             />

@@ -18,6 +18,7 @@ import Main from "./pages/Main";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import OAuthSuccess from "./utils/OAuthSuccess";
 import AuthPage from "./pages/AuthPage";
+import { App as CapacitorApp } from "@capacitor/app";
 
 registerSW({ immediate: true });
 
@@ -91,6 +92,41 @@ function App() {
 
     refreshData();
   }, [accessToken]);
+
+ useEffect(() => {
+    const handleOAuthCallback = async () => {
+
+        await CapacitorApp.addListener("appUrlOpen", ({ url }) => {
+
+            console.log("OAuth callback URL:", url);
+
+            if (url.startsWith("com.exptracker.app://oauth2redirect")) {
+
+                const urlObject = new URL(url);
+
+                const token = urlObject.searchParams.get("token");
+                const username = urlObject.searchParams.get("username");
+
+                if (token) {
+
+                    localStorage.setItem("accessToken", token);
+                    localStorage.setItem("username", username || "");
+
+                    console.log("Google login successful");
+
+                    // Go to main application
+                    window.location.href = "/";
+                }
+            }
+        });
+    };
+
+    handleOAuthCallback();
+
+    return () => {
+        CapacitorApp.removeAllListeners();
+    };
+}, []);
 
   const reportingTransactions = filterTransactionsByPeriod(
     allTransactions,
@@ -166,7 +202,7 @@ function App() {
       <Routes>
         <Route path="/oauth-success" element={<OAuthSuccess />} />
         <Route path="/login" element={<AuthPage setAccessToken={setAccessToken} accessToken={accessToken} theme={theme} toggleTheme={toggleTheme} setUserId={setUserId} setUname={setUname} isThemeSwitching={isThemeSwitching} />} />
-        <Route path="/" element={<ProtectedRoute><Main allTransactions={allTransactions} isThemeSwitching={isThemeSwitching} accessToken={accessToken} theme={theme} toggleTheme={toggleTheme} selectedDataView={selectedDataView} setSelectedDataView={setSelectedDataView} reportingTransactions={reportingTransactions} refreshData={refreshData} /></ProtectedRoute>} />
+        <Route path="/" element={<ProtectedRoute><Main allTransactions={allTransactions} isThemeSwitching={isThemeSwitching} accessToken={accessToken} setAccessToken={setAccessToken} theme={theme} toggleTheme={toggleTheme} selectedDataView={selectedDataView} setSelectedDataView={setSelectedDataView} reportingTransactions={reportingTransactions} refreshData={refreshData} /></ProtectedRoute>} />
       </Routes>
       </BrowserRouter>
     </>

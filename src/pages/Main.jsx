@@ -6,7 +6,7 @@ import ExpenseList from '../components/ExpenseList'
 import SideBar from '../components/SideBar'
 import Footer from '../components/Footer'
 
-const Main = ({ allTransactions, isThemeSwitching, accessToken, theme, toggleTheme, selectedDataView, setSelectedDataView, reportingTransactions, refreshData }) => {
+const Main = ({ allTransactions, isThemeSwitching, accessToken, setAccessToken, theme, toggleTheme, selectedDataView, setSelectedDataView, reportingTransactions, refreshData }) => {
   return (
             <>
           <div className={`app ${isThemeSwitching ? "theme-switching" : ""}`}>
@@ -14,6 +14,7 @@ const Main = ({ allTransactions, isThemeSwitching, accessToken, theme, toggleThe
             <Header
               allTransactions={allTransactions}
               accessToken={accessToken}
+              setAccessToken={setAccessToken}
               theme={theme}
               toggleTheme={toggleTheme}
               selectedDataView={selectedDataView}
