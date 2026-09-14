@@ -72,7 +72,7 @@ const Dashboard = ({ allTransactions }) => {
             onClick={() => setIsTotalIncomeVisible(!isTotalIncomeVisibile)}
           >
             <span id="val-income">
-              <span class="masked" style={{ width: "90px" }}>
+              <span class="masked" style={{ width: "90px", cursor: "pointer" }}>
                 {isTotalIncomeVisibile ? `₹${totalIncome}` : "******"}
               </span>
             </span>
@@ -99,7 +99,7 @@ const Dashboard = ({ allTransactions }) => {
             onClick={() => setIsNetBalanceVisible(!isNetBalanceVisible)}
           >
             <span id="val-net">
-              <span class="masked" style={{ width: "90px" }}>
+              <span class="masked" style={{ width: "90px", cursor: "pointer" }}>
                 {isNetBalanceVisible ? `₹${netBalance}` : "******"}
               </span>
             </span>
