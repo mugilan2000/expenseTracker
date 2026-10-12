@@ -1,5 +1,31 @@
 @import url('https://fonts.googleapis.com/css2?family=Changa+One:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
-*{box-sizing:border-box;margin:0;padding:0}
+@import "tailwindcss";
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface2: var(--surface2);
+  --color-surface3: var(--surface3);
+  --color-border: var(--border);
+  --color-border2: var(--border2);
+  --color-text: var(--text);
+  --color-text2: var(--text2);
+  --color-text3: var(--text3);
+  --color-accent: var(--accent);
+  --color-accent2: var(--accent2);
+  --color-green: var(--green);
+  --color-red: var(--red);
+  --color-amber: var(--amber);
+  --color-blue: var(--blue);
+  --color-teal: var(--teal);
+  --color-bg2: var(--bg2);
+  --color-bg3: var(--bg3);
+  --font-sans: var(--font);
+  --font-brand: var(--font-display);
+  --radius-card: var(--r);
+  --radius-control: var(--r2);
+}
+
 :root {
   --bg: #0e0f11;
   --surface: #16181c;
@@ -50,48 +76,18 @@ html {
   background: var(--bg);
 }
 
-html {
-  background: var(--bg);
-}
-
 body {
   background: var(--bg);
   color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  min-height: 100vh;
 }
 
-.theme-overlay {
-  position: fixed;
-  inset: 0;
-  background: var(--bg);
-  opacity: 0;
-  pointer-events: none;
-  z-index: 999;
+#toast {
+  @apply pointer-events-none fixed bottom-6 left-1/2 z-[9999] -translate-x-1/2 translate-y-5 whitespace-nowrap rounded-card border border-border2 bg-surface3 px-5 py-2.5 text-[13px] font-medium text-text opacity-0 transition-all duration-300;
 }
 
-.theme-overlay.active {
-  opacity: 0;
-}
-
-.app,
-.theme-shell {
-  position: relative;
-}
-
-.theme-switching {
-  opacity: 1;
-  filter: saturate(1);
-}
-
-.card,
-.stat-card,
-.expense-item,
-.form-group input,
-.form-group select,
-.cat-chip,
-.type-btn,
-.btn,
-.expense-icon,
-header,
-main {
-  transition: none;
+#toast.show {
+  @apply translate-y-0 opacity-100;
 }

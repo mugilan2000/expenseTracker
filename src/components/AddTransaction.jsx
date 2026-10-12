@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { addData, toast } from "../api/expenseTrackerAPI";
 
-const AddTransaction = ({ allTransactions, refreshData }) => {
+const AddTransaction = ({ refreshData }) => {
   const CATEGORIES = {
     Food: { emoji: "🍽", color: "#f46a6a" },
     Transport: { emoji: "🚌", color: "#5aabff" },
@@ -16,6 +16,8 @@ const AddTransaction = ({ allTransactions, refreshData }) => {
     Investment: { emoji: "📈", color: "#5aabff" },
     Other: { emoji: "✦", color: "#9ba3b4" },
   };
+  const inputClasses =
+    "w-full rounded-control border border-border bg-surface2 px-3 py-2.5 font-sans text-sm text-text focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/25";
 
   const [activeType, setActiveType] = useState("expense");
   const [activeCat, setActiveCat] = useState("Food");
@@ -83,8 +85,8 @@ const AddTransaction = ({ allTransactions, refreshData }) => {
   }, [activeType, activeCat]);
   return (
     <>
-      <div class="card" style={{ marginBottom: "18px" }}>
-        <div class="card-title">
+      <div className="mb-[18px] rounded-card border border-border bg-surface p-4 min-[561px]:p-[22px]">
+        <div className="mb-[18px] flex items-center gap-2 text-[15px] font-semibold text-text">
           <svg
             width="16"
             height="16"
@@ -99,37 +101,41 @@ const AddTransaction = ({ allTransactions, refreshData }) => {
           </svg>
           Add transaction
         </div>
-        <div style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
+        <div className="mb-4 flex gap-2">
           <button
-            class={activeType === "expense" ? "type-btn active-expense" : "type-btn"}
+            type="button"
+            className={`rounded-full border px-5 py-2 text-[13px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${activeType === "expense" ? "border-red bg-red/15 text-red" : "border-border bg-transparent text-text3 hover:border-border2"}`}
             id="btn-expense"
             onClick={() => setType("expense")}
           >
             Expense
           </button>
           <button
-            class={activeType === "income" ? "type-btn active-income" : "type-btn"}
+            type="button"
+            className={`rounded-full border px-5 py-2 text-[13px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${activeType === "income" ? "border-green bg-green/15 text-green" : "border-border bg-transparent text-text3 hover:border-border2"}`}
             id="btn-income"
             onClick={() => setType("income")}
           >
             Income
           </button>
         </div>
-        <div class="form-row">
-          <div class="form-group">
+        <div className="grid grid-cols-1 gap-3 min-[561px]:grid-cols-2">
+          <div className="mb-3.5 flex flex-col gap-1.5">
             <label>Description</label>
             <input
+              className={inputClasses}
               type="text"
               id="inp-name"
               placeholder="e.g. Lunch at Saravana Bhavan"
-              maxlength="60"
+              maxLength="60"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
-          <div class="form-group">
+          <div className="mb-3.5 flex flex-col gap-1.5">
             <label>Amount (₹)</label>
             <input
+              className={inputClasses}
               type="number"
               id="inp-amount"
               placeholder="0.00"
@@ -140,14 +146,14 @@ const AddTransaction = ({ allTransactions, refreshData }) => {
             />
           </div>
         </div>
-        <div class="form-row">
-          <div class="form-group">
+        <div className="grid grid-cols-1 gap-3 min-[561px]:grid-cols-2">
+          <div className="mb-3.5 flex flex-col gap-1.5">
             <label>Date</label>
-            <input type="date" id="inp-date" value={date} onChange={(e) => setDate(e.target.value)} />
+            <input className={inputClasses} type="date" id="inp-date" value={date} onChange={(e) => setDate(e.target.value)} />
           </div>
-          <div class="form-group">
+          <div className="mb-3.5 flex flex-col gap-1.5">
             <label>Payment</label>
-            <select id="inp-payment" value={payment} onChange={(e) => setPayment(e.target.value)}>
+            <select className={inputClasses} id="inp-payment" value={payment} onChange={(e) => setPayment(e.target.value)}>
               <option>UPI</option>
               <option>Cash</option>
               <option>Card</option>
@@ -156,13 +162,14 @@ const AddTransaction = ({ allTransactions, refreshData }) => {
             </select>
           </div>
         </div>
-        <div class="form-group">
+        <div className="mb-3.5 flex flex-col gap-1.5">
           <label>Category</label>
-          <div class="cat-chips" id="cat-chips">
+          <div className="mb-3.5 flex flex-wrap gap-2" id="cat-chips">
             {cats.map((c) => (
               <button
                 key={c}
-                class="cat-chip"
+                type="button"
+                className="rounded-full border border-border bg-transparent px-3.5 py-1.5 text-xs font-medium text-text2 transition-colors hover:border-border2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                 onClick={() => selectCat(c)}
                 style={activeCat === c ? { background: `${CATEGORIES[c].color}22`, borderColor: CATEGORIES[c].color, color: CATEGORIES[c].color } : {}}
               >
@@ -171,7 +178,7 @@ const AddTransaction = ({ allTransactions, refreshData }) => {
             ))}
           </div>
         </div>
-        <button class="btn btn-primary" style={{ width: "100%" }} onClick={handleAddTransaction}>
+        <button className="w-full rounded-control bg-accent px-4 py-2 text-[13px] font-medium text-white transition-colors hover:bg-accent2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" onClick={handleAddTransaction}>
           Add transaction
         </button>
       </div>

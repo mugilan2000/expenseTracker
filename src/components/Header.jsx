@@ -1,6 +1,6 @@
 import { Capacitor } from "@capacitor/core";
 import { Directory, Encoding, Filesystem } from "@capacitor/filesystem";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "../api/expenseTrackerAPI";
 import { Share } from "@capacitor/share";
@@ -94,7 +94,7 @@ const Header = ({
       const fileName = "Data Export.csv";
 
       // Save the CSV into the app's temporary cache
-      const result = await Filesystem.writeFile({
+      await Filesystem.writeFile({
         path: fileName,
         data: csvData,
         directory: Directory.Cache,
@@ -142,6 +142,30 @@ const Header = ({
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
+  const actionButtonClasses =
+    "inline-flex items-center justify-center gap-1.5 rounded-control border border-border bg-transparent px-4 py-2 text-[13px] font-medium text-text2 transition-colors hover:bg-surface3 hover:text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50";
+  const mobileMenuClasses = `fixed right-0 top-0 z-[95] hidden h-dvh w-[min(84vw,280px)] flex-col gap-2.5 overflow-y-auto rounded-l-3xl border-l border-border bg-surface p-4 shadow-2xl ${isMobileMenuOpen ? "max-[560px]:flex" : "max-[560px]:hidden"}`;
+
+  const selectDataView = (view, closeMenuAfterSelect = false) => {
+    setSelectedDataView(view);
+    setIsDataViewOpen(false);
+    if (closeMenuAfterSelect) closeMobileMenu();
+  };
+
+  const renderDataViewOptions = (closeMenuAfterSelect = false, stretch = false) => (
+    <ul className={`absolute left-0 top-[calc(100%+8px)] z-20 m-0 min-w-36 list-none rounded-control border border-border bg-surface p-1.5 shadow-xl ${stretch ? "right-0 w-full" : ""}`}>
+      {["overall", "monthly"].map((view) => (
+        <li
+          key={view}
+          onClick={() => selectDataView(view, closeMenuAfterSelect)}
+          className={`cursor-pointer rounded-lg px-3 py-2.5 text-[13px] font-semibold text-text2 hover:bg-surface3 ${selectedDataView === view ? "bg-surface3" : "bg-transparent"}`}
+        >
+          {view === "overall" ? "Overall" : "Monthly"}
+        </li>
+      ))}
+    </ul>
+  );
+
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("transactions");
@@ -154,113 +178,45 @@ const Header = ({
   return (
     <>
       {accessToken ? (
-        <header>
-          <div className="logo">
+        <header className="sticky top-0 z-[100] flex h-[60px] items-center justify-between border-b border-border bg-surface px-4 min-[561px]:px-7">
+          <div className="font-brand text-[22px] text-text">
             Expense<span>Tracker</span>
           </div>
 
-          <div className="header-actions desktop-actions">
+          <div className="flex items-center gap-2.5 max-[560px]:hidden">
             <button
               type="button"
-              className="btn btn-ghost"
+              className={`${actionButtonClasses} min-w-[92px]`}
               onClick={toggleTheme}
               title={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                minWidth: "92px",
-                justifyContent: "center",
-              }}
             >
               <span>{isDarkMode ? "☀️" : "🌙"}</span>
               <span>{isDarkMode ? "Light" : "Dark"}</span>
             </button>
-            <span
-              id="month-label"
-              style={{ fontSize: "13px", color: "var(--text3)" }}
-            ></span>
-            <div style={{ position: "relative" }}>
+            <span id="month-label" className="text-[13px] text-text3"></span>
+            <div className="relative">
               <button
-              className="btn btn-ghost"
+                className={actionButtonClasses}
                 type="button"
                 onClick={() => setIsDataViewOpen((prev) => !prev)}
               >
                 <span>{selectedDataView === "monthly" ? "Monthly" : "Overall"}</span>
-                <span style={{ fontSize: "10px", opacity: 0.8 }}>▾</span>
+                <span className="text-[10px] opacity-80">▾</span>
               </button>
 
-              {isDataViewOpen && (
-                <ul
-                  style={{
-                    position: "absolute",
-                    top: "calc(100% + 8px)",
-                    left: 0,
-                    minWidth: "140px",
-                    margin: 0,
-                    padding: "6px",
-                    listStyle: "none",
-                    borderRadius: "14px",
-                    border: "1px solid rgba(255, 255, 255, 0.12)",
-                    background: "var(--surface)",
-                    boxShadow: "0 10px 24px rgba(0, 0, 0, 0.2)",
-                    zIndex: 20,
-                  }}
-                >
-                  <li
-                    onClick={() => {
-                      setSelectedDataView("overall");
-                      setIsDataViewOpen(false);
-                    }}
-                    style={{
-                      padding: "10px 12px",
-                      borderRadius: "10px",
-                      cursor: "pointer",
-                      color: "var(--text2)",
-                      fontSize: "13px",
-                      fontWeight: 600,
-                      background:
-                        selectedDataView === "overall"
-                          ? "rgba(255, 255, 255, 0.08)"
-                          : "transparent",
-                    }}
-                  >
-                    Overall
-                  </li>
-                  <li
-                    onClick={() => {
-                      setSelectedDataView("monthly");
-                      setIsDataViewOpen(false);
-                    }}
-                    style={{
-                      padding: "10px 12px",
-                      borderRadius: "10px",
-                      cursor: "pointer",
-                      color: "var(--text2)",
-                      fontSize: "13px",
-                      fontWeight: 600,
-                      background:
-                        selectedDataView === "monthly"
-                          ? "rgba(255, 255, 255, 0.08)"
-                          : "transparent",
-                    }}
-                  >
-                    Monthly
-                  </li>
-                </ul>
-              )}
+              {isDataViewOpen && renderDataViewOptions()}
             </div>
-            <button className="btn btn-ghost" onClick={exportCSV}>
+            <button className={actionButtonClasses} onClick={exportCSV}>
               Export CSV
             </button>
-            <button className="btn btn-ghost" onClick={handleLogout}>
+            <button className={actionButtonClasses} onClick={handleLogout}>
               Logout
             </button>
           </div>
 
           <button
             type="button"
-            className="mobile-menu-toggle"
+            className="hidden size-10 items-center justify-center rounded-full border border-border bg-surface2 text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent max-[560px]:flex"
             onClick={() => setIsMobileMenuOpen((prev) => !prev)}
             aria-label="Open menu"
           >
@@ -268,27 +224,19 @@ const Header = ({
           </button>
 
           <div
-            className={`mobile-menu-backdrop ${isMobileMenuOpen ? "open" : ""}`}
+            className={`fixed inset-0 z-[90] hidden bg-black/35 transition-opacity max-[560px]:block ${isMobileMenuOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}`}
             onClick={closeMobileMenu}
           />
 
-          <div className={`mobile-menu-panel ${isMobileMenuOpen ? "open" : ""}`}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "8px",
-              }}
-            >
-              <span style={{ fontSize: "13px", fontWeight: 700, color: "var(--text2)" }}>
+          <div className={mobileMenuClasses}>
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-[13px] font-bold text-text2">
                 Menu
               </span>
               <button
                 type="button"
-                className="btn btn-ghost"
+                className={`${actionButtonClasses} px-2.5 py-1.5`}
                 onClick={closeMobileMenu}
-                style={{ padding: "6px 10px" }}
               >
                 ✕
               </button>
@@ -296,7 +244,7 @@ const Header = ({
 
             <button
               type="button"
-              className="btn btn-ghost mobile-action-btn"
+              className={`${actionButtonClasses} w-full justify-start`}
               onClick={() => {
                 toggleTheme();
                 closeMobileMenu();
@@ -307,81 +255,21 @@ const Header = ({
               <span>{isDarkMode ? " Light" : " Dark"}</span>
             </button>
 
-            <div style={{ position: "relative", width: "100%" }}>
+            <div className="relative w-full">
               <button
                 type="button"
-                className="btn btn-ghost mobile-action-btn"
+                className={`${actionButtonClasses} w-full justify-start`}
                 onClick={() => setIsDataViewOpen((prev) => !prev)}
               >
                 <span>{selectedDataView === "monthly" ? "Monthly" : "Overall"}</span>
-                <span style={{ marginLeft: "6px" }}>▾</span>
+                <span className="ml-1.5">▾</span>
               </button>
 
-              {isDataViewOpen && (
-                <ul
-                  style={{
-                    position: "absolute",
-                    top: "calc(100% + 8px)",
-                    left: 0,
-                    right: 0,
-                    margin: 0,
-                    padding: "6px",
-                    listStyle: "none",
-                    borderRadius: "14px",
-                    border: "1px solid rgba(255, 255, 255, 0.12)",
-                    background: "var(--surface)",
-                    boxShadow: "0 10px 24px rgba(0, 0, 0, 0.2)",
-                    zIndex: 20,
-                  }}
-                >
-                  <li
-                    onClick={() => {
-                      setSelectedDataView("overall");
-                      setIsDataViewOpen(false);
-                      closeMobileMenu();
-                    }}
-                    style={{
-                      padding: "10px 12px",
-                      borderRadius: "10px",
-                      cursor: "pointer",
-                      color: "var(--text2)",
-                      fontSize: "13px",
-                      fontWeight: 600,
-                      background:
-                        selectedDataView === "overall"
-                          ? "rgba(255, 255, 255, 0.08)"
-                          : "transparent",
-                    }}
-                  >
-                    Overall
-                  </li>
-                  <li
-                    onClick={() => {
-                      setSelectedDataView("monthly");
-                      setIsDataViewOpen(false);
-                      closeMobileMenu();
-                    }}
-                    style={{
-                      padding: "10px 12px",
-                      borderRadius: "10px",
-                      cursor: "pointer",
-                      color: "var(--text2)",
-                      fontSize: "13px",
-                      fontWeight: 600,
-                      background:
-                        selectedDataView === "monthly"
-                          ? "rgba(255, 255, 255, 0.08)"
-                          : "transparent",
-                    }}
-                  >
-                    Monthly
-                  </li>
-                </ul>
-              )}
+              {isDataViewOpen && renderDataViewOptions(true, true)}
             </div>
 
             <button
-              className="btn btn-ghost mobile-action-btn"
+              className={`${actionButtonClasses} w-full justify-start`}
               onClick={() => {
                 exportCSV();
                 closeMobileMenu();
@@ -389,29 +277,22 @@ const Header = ({
             >
               Export CSV
             </button>
-             <button className="btn btn-ghost mobile-action-btn" onClick={handleLogout}>
+             <button className={`${actionButtonClasses} w-full justify-start`} onClick={handleLogout}>
               Logout
             </button>
           </div>
         </header>
       ) : (
-        <header>
-          <div className="logo">
+        <header className="sticky top-0 z-[100] flex h-[60px] items-center justify-between border-b border-border bg-surface px-4 min-[561px]:px-7">
+          <div className="font-brand text-[22px] text-text">
             Expense<span>Tracker</span>
           </div>
-          <div className="header-actions desktop-actions">
+          <div className="flex items-center gap-2.5 max-[560px]:hidden">
             <button
               type="button"
-              className="btn btn-ghost"
+              className={`${actionButtonClasses} min-w-[92px]`}
               onClick={toggleTheme}
               title={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                minWidth: "92px",
-                justifyContent: "center",
-              }}
             >
               <span>{isDarkMode ? "☀️" : "🌙"}</span>
               <span>{isDarkMode ? "Light" : "Dark"}</span>
@@ -420,7 +301,7 @@ const Header = ({
 
           <button
             type="button"
-            className="mobile-menu-toggle"
+            className="hidden size-10 items-center justify-center rounded-full border border-border bg-surface2 text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent max-[560px]:flex"
             onClick={() => setIsMobileMenuOpen((prev) => !prev)}
             aria-label="Open menu"
           >
@@ -428,27 +309,19 @@ const Header = ({
           </button>
 
           <div
-            className={`mobile-menu-backdrop ${isMobileMenuOpen ? "open" : ""}`}
+            className={`fixed inset-0 z-[90] hidden bg-black/35 transition-opacity max-[560px]:block ${isMobileMenuOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}`}
             onClick={closeMobileMenu}
           />
 
-          <div className={`mobile-menu-panel ${isMobileMenuOpen ? "open" : ""}`}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "8px",
-              }}
-            >
-              <span style={{ fontSize: "13px", fontWeight: 700, color: "var(--text2)" }}>
+          <div className={mobileMenuClasses}>
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-[13px] font-bold text-text2">
                 Menu
               </span>
               <button
                 type="button"
-                className="btn btn-ghost"
+                className={`${actionButtonClasses} px-2.5 py-1.5`}
                 onClick={closeMobileMenu}
-                style={{ padding: "6px 10px" }}
               >
                 ✕
               </button>
@@ -456,7 +329,7 @@ const Header = ({
 
             <button
               type="button"
-              className="btn btn-ghost mobile-action-btn"
+              className={`${actionButtonClasses} w-full justify-start`}
               onClick={() => {
                 toggleTheme();
                 closeMobileMenu();

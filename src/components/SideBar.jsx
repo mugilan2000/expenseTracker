@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { fmt } from "../api/expenseTrackerAPI";
 
 const SideBar = ({ allTransactions, reportingTransactions = allTransactions }) => {
@@ -82,9 +82,9 @@ const SideBar = ({ allTransactions, reportingTransactions = allTransactions }) =
   }, [budget, allTransactions, reportingTransactions]);
   return (
     <>
-      <div class="sidebar">
-        <div class="card">
-          <div class="card-title">
+      <div className="flex flex-col gap-3.5">
+        <div className="rounded-card border border-border bg-surface p-4 min-[561px]:p-[22px]">
+          <div className="mb-[18px] flex items-center gap-2 text-[15px] font-semibold text-text">
             <svg
               width="15"
               height="15"
@@ -97,38 +97,39 @@ const SideBar = ({ allTransactions, reportingTransactions = allTransactions }) =
             </svg>
             Monthly budget
           </div>
-          <div class="budget-section">
-            <div class="budget-row">
-              <span class="budget-label">Spent</span>
+          <div className="mt-1">
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-[13px] text-text2">Spent</span>
               <span
-                class="budget-val"
+                className="text-[13px] font-semibold"
                 id="budget-spent"
                 style={{ color: "var(--red)" }}
               >
                 ₹{spent}
               </span>
             </div>
-            <div class="budget-row">
-              <span class="budget-label">Budget</span>
-              <span class="budget-val" id="budget-set">
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-[13px] text-text2">Budget</span>
+              <span className="text-[13px] font-semibold" id="budget-set">
                 ₹{budget ? fmt(budget) : "Not set"}
               </span>
             </div>
-            <div class="big-bar-track">
+            <div className="mb-1.5 h-2.5 overflow-hidden rounded-md bg-surface3">
               <div
-                class={"big-bar-fill" + (pct >= 100 ? " danger" : pct >= 75 ? " warn" : "")}
+                className={`h-full rounded-md transition-all ${pct >= 100 ? "bg-red" : pct >= 75 ? "bg-amber" : "bg-green"}`}
                 id="budget-bar"
                 style={{ width: `${pct}%` }}
               ></div>
             </div>
             <div
-              style={{ fontSize: "12px", color: "var(--text3)" }}
+              className="text-xs text-text3"
               id="budget-pct"
             >
               {pct > 0 ? `${pct}% of budget used` : "Set a budget below"}
             </div>
-            <div class="budget-input-row">
+            <div className="mt-2.5 flex items-center gap-2">
               <input
+                className="min-w-0 flex-1 rounded-control border border-border bg-surface2 px-3 py-2 text-[13px] text-text placeholder:text-text3 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/25"
                 type="number"
                 id="budget-input"
                 placeholder="Set monthly budget (₹)"
@@ -138,7 +139,7 @@ const SideBar = ({ allTransactions, reportingTransactions = allTransactions }) =
                 onChange={(e) => setBudgetInput(e.target.value)}
               />
               <button
-                class="btn btn-primary"
+                className="rounded-control bg-accent px-3 py-2 text-xs font-medium text-white hover:bg-accent2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                 onClick={() => {
                   if (budgetInput !== "") {
                     setBudget(budgetInput);
@@ -146,7 +147,6 @@ const SideBar = ({ allTransactions, reportingTransactions = allTransactions }) =
                     setBudgetInput("");
                   }
                 }}
-                style={{ padding: "8px 12px", fontSize: "12px" }}
               >
                 Set
               </button>
@@ -154,8 +154,8 @@ const SideBar = ({ allTransactions, reportingTransactions = allTransactions }) =
           </div>
         </div>
 
-        <div class="card">
-          <div class="card-title">
+        <div className="rounded-card border border-border bg-surface p-4 min-[561px]:p-[22px]">
+          <div className="mb-[18px] flex items-center gap-2 text-[15px] font-semibold text-text">
             <svg
               width="15"
               height="15"
@@ -169,13 +169,13 @@ const SideBar = ({ allTransactions, reportingTransactions = allTransactions }) =
             </svg>
             Spending by category
           </div>
-          <div class="bar-chart" id="cat-chart">
+          <div className="mt-1 flex flex-col gap-2.5" id="cat-chart">
             {sortedCategories.length ? (
               sortedCategories.map(([category, amount]) => (
-                <div key={category} class="bar-row">
-                  <div class="bar-label">{CATEGORIES[category].emoji} {category}</div>
-                  <div class="bar-track"><div class="bar-fill" style={{ width: `${Math.round((amount / maxCategoryAmount) * 100)}%`, background: `${CATEGORIES[category].color}` }}></div></div>
-                  <div class="bar-val">₹{fmt(amount)}</div>
+                <div key={category} className="grid grid-cols-[minmax(0,100px)_minmax(0,1fr)_52px] items-center gap-2.5">
+                  <div className="overflow-hidden text-ellipsis whitespace-nowrap text-xs text-text2">{CATEGORIES[category].emoji} {category}</div>
+                  <div className="h-1.5 overflow-hidden rounded-full bg-surface3"><div className="h-full rounded-full transition-[width] duration-500" style={{ width: `${Math.round((amount / maxCategoryAmount) * 100)}%`, background: `${CATEGORIES[category].color}` }}></div></div>
+                  <div className="text-right text-xs font-medium text-text2">₹{fmt(amount)}</div>
                 </div>
               ))
             ) : (
@@ -184,8 +184,8 @@ const SideBar = ({ allTransactions, reportingTransactions = allTransactions }) =
           </div>
         </div>
 
-        <div class="card">
-          <div class="card-title">
+        <div className="rounded-card border border-border bg-surface p-4 min-[561px]:p-[22px]">
+          <div className="mb-[18px] flex items-center gap-2 text-[15px] font-semibold text-text">
             <svg
               width="15"
               height="15"
@@ -203,13 +203,9 @@ const SideBar = ({ allTransactions, reportingTransactions = allTransactions }) =
           </div>
           <div
             id="streak-info"
-            style={{
-              fontSize: "13px",
-              color: "var(--text2)",
-              lineHeight: "1.7",
-            }}
+            className="text-[13px] leading-[1.7] text-text2"
           ><div style={{ marginBottom: "6px" }}><span style={{ fontSize: "22px", fontWeight: "600", color: "var(--amber)" }}>{days.size}</span> <span style={{ color: "var(--text3)" }}>days tracked</span></div>
-    <div style={{ color: "var(--text3)" }}>{allTransactions.length} total transactions</div></div>
+    <div className="text-text3">{allTransactions.length} total transactions</div></div>
         </div>
       </div>
     </>

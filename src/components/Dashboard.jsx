@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { fmt } from "../api/expenseTrackerAPI";
 
 const Dashboard = ({ allTransactions }) => {
   const [isTotalIncomeVisibile, setIsTotalIncomeVisible] = useState(false);
   const [isNetBalanceVisible, setIsNetBalanceVisible] = useState(false);
+  const [isTotalExpensesVisible, setIsTotalExpensesVisible] = useState(false);
+  const [isMonthExpenseVisible, setIsMonthExpenseVisible] = useState(false);
 
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalExpenses, setTotalExpenses] = useState(0);
@@ -60,58 +62,77 @@ const Dashboard = ({ allTransactions }) => {
 
   return (
     <>
-    <div>
-      <h3 className="stat-label" style={{ color: "var(--text)" }}>Hello, {localStorage.getItem("username")}</h3>
-    </div>
-      <div class="stats-grid">
-        <div class="stat-card green">
-          <div class="stat-label">Total Income</div>
-          <div
-            class="stat-value green"
+      <div className="mb-5">
+        <h3 className="text-base font-semibold text-text">Hello, {localStorage.getItem("username")}</h3>
+      </div>
+      <div className="mb-7 grid grid-cols-2 gap-3.5 min-[901px]:grid-cols-4">
+        <div className="relative overflow-hidden rounded-card border border-t-2 border-t-green border-border bg-surface p-4 min-[561px]:p-5">
+          <div className="mb-2 text-[11px] uppercase tracking-[1px] text-text3">Total Income</div>
+          <button
+            type="button"
+            className="block w-full cursor-pointer text-left text-[20px] font-semibold text-green focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent min-[561px]:text-[26px]"
             id="total-income"
+            aria-pressed={isTotalIncomeVisibile}
+            aria-label={isTotalIncomeVisibile ? "Hide total income" : "Show total income"}
             onClick={() => setIsTotalIncomeVisible(!isTotalIncomeVisibile)}
           >
-            <span id="val-income">
-              <span class="masked" style={{ width: "90px", cursor: "pointer" }}>
-                {isTotalIncomeVisibile ? `₹${totalIncome}` : "******"}
-              </span>
+            <span id="val-income" className="inline-block min-w-[90px]">
+              {isTotalIncomeVisibile ? `₹${totalIncome}` : "******"}
             </span>
-          </div>
-          <div class="stat-sub" id="income-count">
+          </button>
+          <div className="mt-1 text-xs text-text3" id="income-count">
             {incomeCount} transactions
           </div>
         </div>
-        <div class="stat-card red">
-          <div class="stat-label">Total Expenses</div>
-          <div class="stat-value red" id="total-expenses">
-            ₹{totalExpenses}
-          </div>
-          <div class="stat-sub" id="expense-count">
+        <div className="relative overflow-hidden rounded-card border border-t-2 border-t-red border-border bg-surface p-4 min-[561px]:p-5">
+          <div className="mb-2 text-[11px] uppercase tracking-[1px] text-text3">Total Expenses</div>
+          <button
+            type="button"
+            className="block w-full cursor-pointer text-left text-[20px] font-semibold text-red focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent min-[561px]:text-[26px]"
+            id="total-expenses"
+            aria-pressed={isTotalExpensesVisible}
+            aria-label={isTotalExpensesVisible ? "Hide total expenses" : "Show total expenses"}
+            onClick={() => setIsTotalExpensesVisible(!isTotalExpensesVisible)}
+          >
+            <span id="val-expenses" className="inline-block min-w-[90px]">
+              {isTotalExpensesVisible ? `₹${totalExpenses}` : "******"}
+            </span>
+          </button>
+          <div className="mt-1 text-xs text-text3" id="expense-count">
             {expenseCount} transactions
           </div>
         </div>
-        <div class="stat-card amber">
-          <div class="stat-label">Net Balance</div>
-          <div
-            class="stat-value amber"
+        <div className="relative overflow-hidden rounded-card border border-t-2 border-t-amber border-border bg-surface p-4 min-[561px]:p-5">
+          <div className="mb-2 text-[11px] uppercase tracking-[1px] text-text3">Net Balance</div>
+          <button
+            type="button"
+            className="block w-full cursor-pointer text-left text-[20px] font-semibold text-amber focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent min-[561px]:text-[26px]"
             id="net-balance"
-            style={{ color: "var(--green)" }}
+            aria-pressed={isNetBalanceVisible}
+            aria-label={isNetBalanceVisible ? "Hide net balance" : "Show net balance"}
             onClick={() => setIsNetBalanceVisible(!isNetBalanceVisible)}
           >
-            <span id="val-net">
-              <span class="masked" style={{ width: "90px", cursor: "pointer" }}>
-                {isNetBalanceVisible ? `₹${netBalance}` : "******"}
-              </span>
+            <span id="val-net" className="inline-block min-w-[90px]">
+              {isNetBalanceVisible ? `₹${netBalance}` : "******"}
             </span>
-          </div>
-          <div class="stat-sub">as of today</div>
+          </button>
+          <div className="mt-1 text-xs text-text3">as of today</div>
         </div>
-        <div class="stat-card blue">
-          <div class="stat-label">Month Expense</div>
-          <div class="stat-value blue" id="biggest-expense">
-            ₹{monthExpense}
-          </div>
-          <div class="stat-sub" id="biggest-cat">
+        <div className="relative overflow-hidden rounded-card border border-t-2 border-t-blue border-border bg-surface p-4 min-[561px]:p-5">
+          <div className="mb-2 text-[11px] uppercase tracking-[1px] text-text3">Month Expense</div>
+          <button
+            type="button"
+            className="block w-full cursor-pointer text-left text-[20px] font-semibold text-blue focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent min-[561px]:text-[26px]"
+            id="month-expense"
+            aria-pressed={isMonthExpenseVisible}
+            aria-label={isMonthExpenseVisible ? "Hide month expense" : "Show month expense"}
+            onClick={() => setIsMonthExpenseVisible(!isMonthExpenseVisible)}
+          >
+            <span id="val-month" className="inline-block min-w-[90px]">
+              {isMonthExpenseVisible ? `₹${monthExpense}` : "******"}
+            </span>
+          </button>
+          <div className="mt-1 text-xs text-text3" id="biggest-cat">
             All categories
           </div>
         </div>
