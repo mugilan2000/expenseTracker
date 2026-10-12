@@ -1,13 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import "./App.css";
-import Header from "./components/Header";
-import Dashboard from "./components/Dashboard";
-import AddTransaction from "./components/AddTransaction";
-import ExpenseList from "./components/ExpenseList";
-import SideBar from "./components/SideBar";
+import { useEffect, useState } from "react";
 import { getData } from "./api/expenseTrackerAPI";
-import Login from "./components/Login";
-import Footer from "./components/Footer";
 import { registerSW } from "virtual:pwa-register";
 import {
   filterTransactionsByPeriod,
@@ -30,8 +22,8 @@ function App() {
   const [accessToken, setAccessToken] = useState(
     localStorage.getItem("accessToken") || null,
   );
-  const [userId, setUserId] = useState(localStorage.getItem("userId") || null);
-  const [uname, setUname] = useState(localStorage.getItem("username") || null);
+  const [, setUserId] = useState(localStorage.getItem("userId") || null);
+  const [, setUname] = useState(localStorage.getItem("username") || null);
   const [theme, setTheme] = useState(() => {
     if (typeof window === "undefined") return "dark";
 
@@ -42,8 +34,6 @@ function App() {
       ? "dark"
       : "light";
   });
-  const [isThemeSwitching, setIsThemeSwitching] = useState(false);
-  const themeTimeoutRef = useRef(null);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
@@ -52,16 +42,7 @@ function App() {
   }, [theme]);
 
   const toggleTheme = () => {
-    if (themeTimeoutRef.current) {
-      clearTimeout(themeTimeoutRef.current);
-    }
-
-    setIsThemeSwitching(true);
     setTheme((currentTheme) => (currentTheme === "dark" ? "light" : "dark"));
-
-    themeTimeoutRef.current = setTimeout(() => {
-      setIsThemeSwitching(false);
-    }, 320);
   };
 
   const refreshData = async (force = false) => {
@@ -93,153 +74,92 @@ function App() {
     refreshData();
   }, [accessToken]);
 
- useEffect(() => {
+  useEffect(() => {
     const handleOAuthCallback = async () => {
+      await CapacitorApp.addListener("appUrlOpen", ({ url }) => {
+        console.log("OAuth callback URL:", url);
 
-        await CapacitorApp.addListener("appUrlOpen", ({ url }) => {
+        if (url.startsWith("com.exptracker.app://oauth2redirect")) {
+          const urlObject = new URL(url);
+          const token = urlObject.searchParams.get("token");
+          const username = urlObject.searchParams.get("username");
 
-            console.log("OAuth callback URL:", url);
-
-            if (url.startsWith("com.exptracker.app://oauth2redirect")) {
-
-                const urlObject = new URL(url);
-
-                const token = urlObject.searchParams.get("token");
-                const username = urlObject.searchParams.get("username");
-
-                if (token) {
-
-                    localStorage.setItem("accessToken", token);
-                    localStorage.setItem("username", username || "");
-
-                    console.log("Google login successful");
-
-                    // Go to main application
-                    window.location.href = "/";
-                }
-            }
-        });
+          if (token) {
+            localStorage.setItem("accessToken", token);
+            localStorage.setItem("username", username || "");
+            console.log("Google login successful");
+            window.location.href = "/";
+          }
+        }
+      });
     };
 
     handleOAuthCallback();
 
     return () => {
-        CapacitorApp.removeAllListeners();
+      CapacitorApp.removeAllListeners();
     };
-}, []);
+  }, []);
 
-useEffect(() => {
+  useEffect(() => {
+    let listener;
 
-        const setupBackButton = async () => {
+    CapacitorApp.addListener("backButton", ({ canGoBack }) => {
+      if (canGoBack) {
+        window.history.back();
+      } else {
+        CapacitorApp.exitApp();
+      }
+    }).then((result) => {
+      listener = result;
+    });
 
-            const listener = await CapacitorApp.addListener(
-                "backButton",
-                ({ canGoBack }) => {
-
-                    if (canGoBack) {
-                        window.history.back();
-                    } else {
-                        CapacitorApp.exitApp();
-                    }
-
-                }
-            );
-
-            return listener;
-        };
-
-        let listener;
-
-        setupBackButton().then((result) => {
-            listener = result;
-        });
-
-        return () => {
-            if (listener) {
-                listener.remove();
-            }
-        };
-
-    }, []);
+    return () => {
+      listener?.remove();
+    };
+  }, []);
 
   const reportingTransactions = filterTransactionsByPeriod(
     allTransactions,
     selectedDataView,
   );
 
-  useEffect(() => {
-    return () => {
-      if (themeTimeoutRef.current) {
-        clearTimeout(themeTimeoutRef.current);
-      }
-    };
-  }, []);
-
   return (
-    <>
-      {/* {!accessToken && (
-        <>
-          <div className={`theme-shell ${isThemeSwitching ? "theme-switching" : ""}`}>
-            <div className={`theme-overlay ${isThemeSwitching ? "active" : ""}`} />
-            <Header
-              accessToken={accessToken}
+    <BrowserRouter basename={import.meta.env.VITE_BASE_PATH}>
+      <Routes>
+        <Route path="/oauth-success" element={<OAuthSuccess />} />
+        <Route
+          path="/login"
+          element={
+            <AuthPage
+              setAccessToken={setAccessToken}
               theme={theme}
               toggleTheme={toggleTheme}
-            />
-            <Login
-              setAccessToken={setAccessToken}
               setUserId={setUserId}
               setUname={setUname}
             />
-            <Footer />
-          </div>
-        </>
-      )}
-      {accessToken && (
-        <>
-          <div className={`app ${isThemeSwitching ? "theme-switching" : ""}`}>
-            <div className={`theme-overlay ${isThemeSwitching ? "active" : ""}`} />
-            <Header
-              allTransactions={allTransactions}
-              accessToken={accessToken}
-              theme={theme}
-              toggleTheme={toggleTheme}
-              selectedDataView={selectedDataView}
-              setSelectedDataView={setSelectedDataView}
-            />
-            <main>
-              <Dashboard allTransactions={reportingTransactions} />
-              <div className="content-grid">
-                <div>
-                  <AddTransaction
-                    allTransactions={allTransactions}
-                    refreshData={refreshData}
-                  />
-                  <ExpenseList
-                    allTransactions={reportingTransactions}
-                    refreshData={refreshData}
-                  />
-                </div>
-                <SideBar
-                  allTransactions={allTransactions}
-                  reportingTransactions={reportingTransactions}
-                />
-              </div>
-            </main>
-            <Footer />
-          </div>
-          <div id="toast"></div>
-        </>
-      )} */}
-
-      <BrowserRouter basename={import.meta.env.VITE_BASE_PATH}>
-      <Routes>
-        <Route path="/oauth-success" element={<OAuthSuccess />} />
-        <Route path="/login" element={<AuthPage setAccessToken={setAccessToken} accessToken={accessToken} theme={theme} toggleTheme={toggleTheme} setUserId={setUserId} setUname={setUname} isThemeSwitching={isThemeSwitching} />} />
-        <Route path="/" element={<ProtectedRoute><Main allTransactions={allTransactions} isThemeSwitching={isThemeSwitching} accessToken={accessToken} setAccessToken={setAccessToken} theme={theme} toggleTheme={toggleTheme} selectedDataView={selectedDataView} setSelectedDataView={setSelectedDataView} reportingTransactions={reportingTransactions} refreshData={refreshData} /></ProtectedRoute>} />
+          }
+        />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Main
+                allTransactions={allTransactions}
+                accessToken={accessToken}
+                setAccessToken={setAccessToken}
+                theme={theme}
+                toggleTheme={toggleTheme}
+                selectedDataView={selectedDataView}
+                setSelectedDataView={setSelectedDataView}
+                reportingTransactions={reportingTransactions}
+                refreshData={refreshData}
+              />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
-      </BrowserRouter>
-    </>
+    </BrowserRouter>
   );
 }
 
